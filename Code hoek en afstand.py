@@ -1,6 +1,6 @@
 import math
 
-R = 6373000.0
+R = 6373000.0     #straal van de Aarde in meters
 
 #stel mijn huis:
 lat1 = math.radians(51.8219176)
