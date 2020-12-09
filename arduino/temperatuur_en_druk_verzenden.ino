@@ -1,7 +1,7 @@
 /*
- Met deze code kun je de APC220 module als transmitter testen. 
- De APC220 sluit jeals volgt aan op een uno:
- APC220 > UNO
+ Deze code is voor het versturen van data, dus de satellietcode. 
+ 
+ APC220:
  gnd > gnd
  VCC > 5V
  en > niet aansluiten
@@ -9,6 +9,14 @@
  TXD > D9
  AUX > niet aansluiten
  SET > niet aansluiten
+ 
+ Temperatuursensor(BMP280):
+ VCC -> 3.3V BELANGRIJK! NIET 5V!
+ gnd -> gnd
+ SCL -> 13
+ SDA -> 11
+ CSE -> 6
+ SDC -> 12
  */
 #include <SoftwareSerial.h>
 SoftwareSerial mySerial(9,10);
