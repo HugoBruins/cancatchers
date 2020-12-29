@@ -28,6 +28,13 @@ long tijd;
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BMP280.h>
 
+//gps
+#include <TinyGPS.h>
+TinyGPS gps; // create gps object 
+float lat = 28.5458,lon = 77.1703;
+SoftwareSerial gpsSerial(3,4);
+
+
 #define BMP_SCK 13
 #define BMP_MISO 12
 #define BMP_MOSI 11 
@@ -52,12 +59,12 @@ void setup() {
 }
 
 void loop() {
+  float temp = bmp.readTemperature();
   long tijd = millis();
-  Serial.print ("APC220 EPIC :)   ");
   mySerial.print(F("X"));
   mySerial.print(tijd);
   mySerial.print(F("X"));
-  mySerial.print(bmp.readTemperature());
+  mySerial.print(temp);
     
   mySerial.print(F("X"));
   mySerial.print(bmp.readPressure());
@@ -66,5 +73,10 @@ void loop() {
   mySerial.print(bmp.readAltitude(986.7));
   mySerial.print("X");
   mySerial.println();
+
+  gps.f_get_position(&lat,&lon);
+  String latitude = String(lat,6);
+  String longitude = String(lon,6);
+  Serial.println(latitude+";"+longitude+";"+ (gps.satellites() == TinyGPS::GPS_INVALID_SATELLITES ? 0 : gps.satellites())+";"+temp);
   delay(1000);
 }
