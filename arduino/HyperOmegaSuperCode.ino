@@ -14,6 +14,8 @@
 
 SoftwareSerial mySerial(6,5);
 
+SoftwareSerial ss(3, 2);
+
 #include <Wire.h>
 #include <SPI.h>
 #include <Adafruit_Sensor.h>
@@ -34,7 +36,7 @@ float gemiddeldeTemperatuur;
 float constante;
 float lapseRate = -0.0065;     //kelvin per meter in de troposfeer
 int R = 287;                   //gasconstante
-float g = -9.81;            //zwaartekracht volgens SIA
+float g = -9.81;               //zwaartekracht volgens SIA
 
 float hoogte;
 
@@ -43,6 +45,7 @@ float hoogte;
 void setup() {
   randomSeed(analogRead(1));
   Serial.begin(9600);
+  ss.begin(9600);
   
   
   
@@ -60,12 +63,11 @@ void setup() {
   
   //de sensor warmdraaien voor de nulmeting
   for (int i = 0; i <= 100; i++) {
-    float kaas = bmp.readPressure();
-    kaas = bmp.readTemperature();
-    Serial.println(kaas);
+    bmp.readPressure();
+    bmp.readTemperature();
   }
 
-  //1000x de luchtdruk meten en daarvan het gemiddelde nemen, zodat bij één foutieve meting het verschil in hoogte niet zo erg is. 
+  //nulmeting
   for (int i = 0; i <= 999; i++) {
     gemiddeldeLuchtdruk += bmp.readPressure();
     gemiddeldeTemperatuur += bmp.readTemperature();
@@ -99,6 +101,11 @@ void setup() {
 
 
 void loop() {
+  byte gpsData = ss.read();
+  Serial.write(gpsData);
+
+
+  
   String luchtdruk = String(round(bmp.readPressure()));
   String temperatuur = String(bmp.readTemperature());
   float luchtdruk2 = luchtdruk.toFloat();
