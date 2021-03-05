@@ -58,6 +58,12 @@ void setup() {
 
   constante = (1 / (g / (lapseRate * R)));
   Serial.println("hoi");
+  
+  for (int i = 0; i <= 100; i++) {
+    float kaas = bmp.readPressure();
+    kaas = bmp.readTemperature();
+    Serial.println(kaas);
+  }
 
   //1001x de luchtdruk meten en daarvan het gemiddelde nemen, zodat bij één foutieve meting het verschil in hoogte niet zo erg is. 
   for (int i = 0; i <= 1000; i++) {
