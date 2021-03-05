@@ -1,22 +1,18 @@
 /***************************************************************************
   This is a library for the BMP280 humidity, temperature & pressure sensor
-
   Designed specifically to work with the Adafruit BMEP280 Breakout
   ----> http://www.adafruit.com/products/2651
-
   These sensors use I2C or SPI to communicate, 2 or 4 pins are required
   to interface.
-
   Adafruit invests time and resources providing this open source code,
   please support Adafruit andopen-source hardware by purchasing products
   from Adafruit!
-
   Written by Limor Fried & Kevin Townsend for Adafruit Industries.
   BSD license, all text above must be included in any redistribution
  ***************************************************************************/
 #include <SoftwareSerial.h>
 
-SoftwareSerial mySerial(10, 9);
+SoftwareSerial mySerial(6,5);
 
 #include <Wire.h>
 #include <SPI.h>
@@ -59,7 +55,6 @@ void setup() {
 
 
 void loop() {
-
   String temperatuur = String(bmp.readTemperature());
   String luchtdruk = String(round(bmp.readPressure()));
   String dataString = temperatuur + " " + luchtdruk;
@@ -71,10 +66,10 @@ void loop() {
     // print to the serial port too:
   }
   else {
-    Serial.println("error opening datalog.txt");
+    //Serial.println("error opening datalog.txt");
   }
   
   Serial.println(dataString);
-  mySerial.print(temperatuur + " " + luchtdruk);
+  mySerial.println(temperatuur + " " + luchtdruk);
   delay(1000);
 }
