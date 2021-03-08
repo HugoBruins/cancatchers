@@ -1,3 +1,5 @@
+//libraries invoegen
+
 #include <SoftwareSerial.h>
 #include <TinyGPS++.h>
 #include <Wire.h>
@@ -6,74 +8,72 @@
 #include <Adafruit_BMP280.h>
 #include <SD.h>
 
-SoftwareSerial mySerial(6, 5);
+//mySerial is voor de verzender, ss is voor de gps
 TinyGPSPlus gps;
-
 static const int RXPin = 3, TXPin = 2;
 static const uint32_t GPSBaud = 9600;
 SoftwareSerial ss(RXPin, TXPin);
-
-const int chipSelect = 4;
-Adafruit_BMP280 bmp; // I2C
-const int BMP_address = 0x76;
-String filename = "data";
-
-
+SoftwareSerial mySerial(6, 5);
 String gpsLat = "-";
 String gpsLon = "-";
+
+
+//voor de temperatuursensor
+Adafruit_BMP280 bmp; // I2C
+const int BMP_address = 0x76;
+
+//chipSelect is voor waar de SD kaart pin is aangesloten
+const int chipSelect = 4;
+String filename = "data";
 String dataString;
+
+
 
 //dit is nodig om later het verschil in luchtdruk te meten
 float gemiddeldeLuchtdruk;
 float gemiddeldeTemperatuur;
-
 float constante;
 float lapseRate = -0.0065;     //kelvin per meter in de troposfeer
 int R = 287;                   //gasconstante
-float g = -9.81;               //zwaartekracht volgens SIA
+float g = -9.81;               //zwaartekracht in Nederland
 float hoogte;
-long loop_timer = millis();
 
 void setup() {
+  //alle serials opstarten
+  Serial.begin(9600);           //arduino serial
+  mySerial.begin(9600);         //verzender serial
+  ss.begin(GPSBaud);            //gps serial
+  randomSeed(analogRead(1));    //voor het genereren van een willekeurig nummer (noise van analoge pin)
 
-  Serial.begin(9600);
-  mySerial.begin(9600);
-  ss.begin(GPSBaud);
-  randomSeed(analogRead(1));
-
-
+  //gps opstarten en sensor opstarten
   Serial.println("Initializing SD card...");
   if (!SD.begin(chipSelect)) {
     Serial.println("Card failed, or not present");
     mySerial.println("sdKaart faalt hem jammer dit");
   }
-
   bmp.begin(BMP_address);
-
+  
+  //de sensor opwarmen voor de nulmeting
   constante = (1 / (g / (lapseRate * R)));
-
-  //de sensor warmdraaien voor de nulmeting
   for (int i = 0; i <= 100; i++) {
     bmp.readPressure();
     bmp.readTemperature();
   }
 
-  //nulmeting
+  //nulmeting voor temperatuur en luchtdruk bij het starten (gemiddele van 1000 metingen)
   for (int i = 0; i <= 999; i++) {
     gemiddeldeLuchtdruk += bmp.readPressure();
     gemiddeldeTemperatuur += bmp.readTemperature();
   }
-
   gemiddeldeLuchtdruk = gemiddeldeLuchtdruk / 1000;
   gemiddeldeTemperatuur = (gemiddeldeTemperatuur / 1000) + 273.15;
-
-
-  //geeft het bestand een willekeurig nummer aan het einde, zodat elke datalezing uniek is zonder dat er internet nodig is (voor tijd).
+  
+  //geeft het bestand een willekeurig nummer aan het einde
   int randomnumber =  random(10000);
   String nummer = String(randomnumber);
   filename = filename + nummer + ".txt";
 
-  //debug
+  //voor debug en om te kijken of het werkt
 
   Serial.println(gemiddeldeLuchtdruk);
   Serial.println(gemiddeldeTemperatuur);
@@ -82,33 +82,27 @@ void setup() {
   Serial.println(filename);
   mySerial.println(filename);
 
-
   if (!bmp.begin(BMP_address)) {
     Serial.println(F("Could not find a valid BMP280 sensor, check wiring!"));
+    mySerial.println(F("Could not find a valid BMP280 sensor, check wiring!"));
     while (1);
   }
-
+  
+  //de interrupt die elke 1 seconde wordt herhaald buiten de loop om de data te versturen en de gps data te verzamelen
   cli();
-  TCCR1A = 0;// set entire TCCR1A register to 0
-  TCCR1B = 0;// same for TCCR1B
-  TCNT1  = 0;//initialize counter value to 0
-  // set compare match register for 1hz increments
-  OCR1A = 16074;// = (16*10^6) / (1*1024) - 1 (must be <65536)
-  // turn on CTC mode
+  TCCR1A = 0;
+  TCCR1B = 0;
+  TCNT1  = 0;
+  OCR1A = 16074;
   TCCR1B |= (1 << WGM12);
-  // Set CS10 and CS12 bits for 1024 prescaler
   TCCR1B |= (1 << CS12) | (1 << CS10);
-  // enable timer compare interrupt
   TIMSK1 |= (1 << OCIE1A);
   sei();
 }
 
-
-
-
-
-//0.97 hz
+//de code binnen de interrupt, dit wordt elke seconde buiten de normale loop herhaald.
 ISR(TIMER1_COMPA_vect) {
+  //het verzamelen van de gps breedte en hoogtegraad
   while (ss.available() > 0)
     if (gps.encode(ss.read())) {
       if (gps.location.isValid())
@@ -122,19 +116,13 @@ ISR(TIMER1_COMPA_vect) {
         gpsLon = "0";
       }
     }
+  //het versturen van de data
   mySerial.println(dataString);
 }
 
-
-
-
-
-
-
-
+//de normale loop
 void loop() {
-
-
+  //luchtdruk en temperatuur uitlezen
   String luchtdruk = String(round(bmp.readPressure()));
   String temperatuur = String(bmp.readTemperature());
   float luchtdruk2 = luchtdruk.toFloat();
@@ -144,17 +132,17 @@ void loop() {
   float temperatuurOpHoogte = gemiddeldeTemperatuur * (pow(drukverschil, constante));
   String hoogte = String((temperatuurOpHoogte - gemiddeldeTemperatuur) / lapseRate);
 
+  //alles samenvoegen
   dataString = gpsLat + " " + gpsLon + " " + hoogte + " " + temperatuur + " " + luchtdruk;
-
+  
+  //de data schrijven naar de SD kaart
   File dataFile = SD.open(filename, FILE_WRITE);
   if (dataFile) {
     dataFile.println(dataString);
     dataFile.close();
-    // print to the serial port too:
   }
-
+  //debug
   Serial.println(dataString);
-
-
+  
   delay(10);
 }
