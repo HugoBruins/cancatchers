@@ -28,13 +28,13 @@ String filename = "data";
 String dataString;
 
 //this is necessary for calculating altitude based on pressure difference
-float gemiddeldeLuchtdruk;
-float gemiddeldeTemperatuur;
-float constante;
+float averagePressure;
+float averageTemperature;
+float constant;
 float lapseRate = -0.0065;     //kelvin per meter in the troposphere
 int R = 287;                   //gas constant
 float g = -9.81;               //gravitational acceleration in the Netherlands
-float hoogte;
+float altitude;
 
 void setup() {
   //starting all the serials at 9600
@@ -52,7 +52,7 @@ void setup() {
   bmp.begin(BMP_address);
   
   //preparing the sensor for the zero measure
-  constante = (1 / (g / (lapseRate * R)));
+  constant = (1 / (g / (lapseRate * R)));
   for (int i = 0; i <= 100; i++) {
     bmp.readPressure();
     bmp.readTemperature();
@@ -60,24 +60,24 @@ void setup() {
 
   //zero measure (average of 1000 measures of temperature and pressure at starting location)
   for (int i = 0; i <= 999; i++) {
-    gemiddeldeLuchtdruk += bmp.readPressure();
-    gemiddeldeTemperatuur += bmp.readTemperature();
+    averagePressure += bmp.readPressure();
+    averageTemperature += bmp.readTemperature();
   }
-  gemiddeldeLuchtdruk = gemiddeldeLuchtdruk / 1000;
-  gemiddeldeTemperatuur = (gemiddeldeTemperatuur / 1000) + 273.15;
+  averagePressure = averagePressure / 1000;
+  averageTemperature = (averageTemperature / 1000) + 273.15;
   
   //gives the file inside the sd card reader a random number so other files aren't overwitten
-  int randomnumber =  random(10000);
-  String nummer = String(randomnumber);
-  filename = filename + nummer + ".txt";
+  int randomNumber =  random(10000);
+  String number = String(randomNumber);
+  fileName = fileName + number + ".txt";
 
   //for debug
-  Serial.println(gemiddeldeLuchtdruk);
-  Serial.println(gemiddeldeTemperatuur);
-  mySerial.println(gemiddeldeLuchtdruk);
-  mySerial.println(gemiddeldeTemperatuur);
-  Serial.println(filename);
-  mySerial.println(filename);
+  Serial.println(averagePressure);
+  Serial.println(averageTemperature);
+  mySerial.println(averagePressure);
+  mySerial.println(averageTemperature);
+  Serial.println(fileName);
+  mySerial.println(fileName);
 
   if (!bmp.begin(BMP_address)) {
     Serial.println(F("Could not find a valid BMP280 sensor, check wiring!"));
@@ -121,20 +121,20 @@ ISR(TIMER1_COMPA_vect) {
 //the 100hz normal loop
 void loop() {
   //reading pressure and temperature from the sensor
-  String luchtdruk = String(round(bmp.readPressure()));
-  String temperatuur = String(bmp.readTemperature());
-  float luchtdruk2 = luchtdruk.toFloat();
+  String pressure = String(round(bmp.readPressure()));
+  String temperature = String(bmp.readTemperature());
+  float pressure2 = pressure.toFloat();
 
   //calculating altitude
-  float drukverschil = luchtdruk2 / gemiddeldeLuchtdruk;
-  float temperatuurOpHoogte = gemiddeldeTemperatuur * (pow(drukverschil, constante));
-  String hoogte = String((temperatuurOpHoogte - gemiddeldeTemperatuur) / lapseRate);
+  float pressureDifference = pressure2 / averagePressure;
+  float temperatureAtAltitude = averageTemperature * (pow(pressureDifference, constant));
+  String altitude = String((temperatureAtAltitude - averageTemperature) / lapseRate);
 
   //adding it all into one string
-  dataString = gpsLat + " " + gpsLon + " " + hoogte + " " + temperatuur + " " + luchtdruk;
+  dataString = gpsLat + " " + gpsLon + " " + altitude + " " + temperature + " " + pressure;
   
   //writing the data to the sd card 
-  File dataFile = SD.open(filename, FILE_WRITE);
+  File dataFile = SD.open(fileName, FILE_WRITE);
   if (dataFile) {
     dataFile.println(dataString);
     dataFile.close();
