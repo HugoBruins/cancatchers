@@ -10,7 +10,7 @@
 
 //mySerial is for the transmitter, ss is for the gps module
 TinyGPSPlus gps;
-static const int RXPin = 3, TXPin = 2;
+static const int RXPin = 9, TXPin = 10;
 static const uint32_t GPSBaud = 9600;
 SoftwareSerial ss(RXPin, TXPin);
 SoftwareSerial mySerial(6, 5);
@@ -24,7 +24,7 @@ const int BMP_address = 0x76;
 
 //chipselect is where the last connection of the sd card reader is connected
 const int chipSelect = 4;
-String filename = "data";
+String fileName = "data";
 String dataString;
 
 //this is necessary for calculating altitude based on pressure difference
