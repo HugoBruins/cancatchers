@@ -1,5 +1,5 @@
 //Include de bibliotheken <NMEAGPS.h>, <GPSport.h>, en zorg dat de bibliotheek NeoSWSerial geïnstalleerd is 
-//
+// :)
 //
 #include <Wire.h>
 #include <SPI.h>
