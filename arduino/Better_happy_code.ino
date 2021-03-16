@@ -33,7 +33,13 @@ void setup()
 
   bmp.begin(BMP_address);
   constant = (1 / (-9.81 / (-0.0065 * 287)));
-
+  
+  //warming up sensor (otherwise it acts weird with battery power)
+  for (int i = 0; i <= 50; i++) {
+    bmp.readPressure();
+    bmp.readTemperature();
+  }
+  
   for (int i = 0; i <= 999; i++) {
     averagePressure += bmp.readPressure();
     averageTemperature += bmp.readTemperature();
