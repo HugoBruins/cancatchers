@@ -1,0 +1,27 @@
+/*
+Wires:
+APC220 > Arduino
+gnd > gnd
+vcc > 5V
+en > Not connected
+RXD > D9
+TXD > D8
+AUX > Not connected
+SET > Not connected
+*/
+
+#include <AltSoftSerial.h>
+
+AltSoftSerial receiver;
+
+void setup() {
+  Serial.begin(9600);
+  receiver.begin(9600);
+}
+
+void loop() {
+  if(receiver.available() > 1){
+    String input = receiver.readString();
+    Serial.print(input);    
+  }
+}
