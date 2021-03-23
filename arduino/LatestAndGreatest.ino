@@ -46,7 +46,7 @@ void error_P(const char* str) {
 void setup()
 {
   Serial.begin(9600);
-  transmitter.begin(9600);
+  transmitter.begin(38400);
   while (!Serial);
   transmitter.println(F("Starting initialisation"));
 
@@ -101,7 +101,7 @@ void setup()
   TCCR1B = 0;
   TCNT1  = 0;
   // set compare match register for 0.9500212804766827 Hz increments
-  OCR1A = 16646;
+  OCR1A = 16146;
   TCCR1B |= (1 << WGM12);
   TCCR1B |= (1 << CS12) | (0 << CS11) | (1 << CS10);
   TIMSK1 |= (1 << OCIE1A);
@@ -112,7 +112,7 @@ void setup()
 //interrupt code for transmitting
 ISR(TIMER1_COMPA_vect) {
   gpsPort.end();
-  transmitter.begin(9600);
+  transmitter.begin(38400);
   while (!Serial);
   transmitter.print(fix.satellites); transmitter.print(F(" "));
   transmitter.print(fix.latitude(), 6); transmitter.print(F(" "));
@@ -120,7 +120,8 @@ ISR(TIMER1_COMPA_vect) {
   transmitter.print(Altitude); transmitter.print(F(" "));
   transmitter.print(temperature); transmitter.print(F(" "));
   transmitter.print(pressure, 0); transmitter.print(F(" "));
-  transmitter.print(fix.dateTime.hours + 1); transmitter.print(fix.dateTime.minutes); transmitter.println(fix.dateTime.seconds);
+  transmitter.println(millis());
+  //transmitter.print(fix.dateTime.hours + 1); transmitter.print(fix.dateTime.minutes); transmitter.println(fix.dateTime.seconds);
   transmitter.end();
   gpsPort.begin(9600);
 }
@@ -141,7 +142,7 @@ static void doSomethingPlease()
   //calculate altitude
   float pressureDifference = pressure / averagePressure;
   float temperatureAltitude = averageTemperature * (pow(pressureDifference, constant));
-  Altitude = (temperatureAltitude - averageTemperature) / -0.0065;
+  Altitude = 1000000000;//(temperatureAltitude - averageTemperature) / -0.0065;
   
   //write to file
   file.print(fix.satellites); file.print(F(" "));
