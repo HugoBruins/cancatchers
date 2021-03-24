@@ -142,7 +142,7 @@ static void doSomethingPlease()
   //calculate altitude
   float pressureDifference = pressure / averagePressure;
   float temperatureAltitude = averageTemperature * (pow(pressureDifference, constant));
-  Altitude = 1000000000;//(temperatureAltitude - averageTemperature) / -0.0065;
+  Altitude = (temperatureAltitude - averageTemperature) / -0.0065;
   
   //write to file
   file.print(fix.satellites); file.print(F(" "));
