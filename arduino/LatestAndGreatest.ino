@@ -16,7 +16,7 @@ NMEAGPS  gps; // This parses the GPS characters
 gps_fix  fix; // This holds on to the latest values
 
 //for APC220
-NeoSWSerial transmitter(6, 2);
+SoftwareSerial transmitter(6, 2);
 
 //for temperature/altitude sensor
 Adafruit_BMP280 bmp; // I2C
@@ -46,7 +46,7 @@ void error_P(const char* str) {
 void setup()
 {
   Serial.begin(9600);
-  transmitter.begin(9600);
+  transmitter.begin(1200);
   while (!Serial);
   transmitter.println(F("Starting initialisation"));
 
@@ -101,7 +101,7 @@ void setup()
   TCCR1B = 0;
   TCNT1  = 0;
   // set compare match register for 0.9500212804766827 Hz increments
-  OCR1A = 16146;
+  OCR1A = 22646;
   TCCR1B |= (1 << WGM12);
   TCCR1B |= (1 << CS12) | (0 << CS11) | (1 << CS10);
   TIMSK1 |= (1 << OCIE1A);
@@ -112,7 +112,7 @@ void setup()
 //interrupt code for transmitting
 ISR(TIMER1_COMPA_vect) {
   gpsPort.end();
-  transmitter.begin(9600);
+  transmitter.begin(1200);
   while (!Serial);
   transmitter.print(fix.satellites); transmitter.print(F(" "));
   transmitter.print(fix.latitude(), 6); transmitter.print(F(" "));
