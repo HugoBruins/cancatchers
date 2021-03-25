@@ -46,7 +46,7 @@ void error_P(const char* str) {
 void setup()
 {
   Serial.begin(9600);
-  transmitter.begin(38400);
+  transmitter.begin(9600);
   while (!Serial);
   transmitter.println(F("Starting initialisation"));
 
@@ -112,7 +112,7 @@ void setup()
 //interrupt code for transmitting
 ISR(TIMER1_COMPA_vect) {
   gpsPort.end();
-  transmitter.begin(38400);
+  transmitter.begin(9600);
   while (!Serial);
   transmitter.print(fix.satellites); transmitter.print(F(" "));
   transmitter.print(fix.latitude(), 6); transmitter.print(F(" "));
