@@ -60,7 +60,7 @@ ax[1].set_ylabel('pressure (Pa)')
 ax[1].grid()
 ax[2].plot(timelist, windspeed, color = 'purple')
 ax[2].set_xlabel('time (s)')
-ax[2].set_ylabel('wind speed (meters per second)')
+ax[2].set_ylabel('wind speed (m/s)')
 ax[2].grid()
 
 #for plotting the map
