@@ -17,7 +17,7 @@ BBox = ((round(min(arrayLong),8),   df.longitude.max(),
          round(min(arrayLat),8), df.latitude.max()))
 print(BBox)
 
-#this is for calculating wind speed
+#this is for calculating wind speed, sometimes coördinates fluctuate a bit too much however
 R = 6373000.0 #radius earth
 counter = 0
 windspeed = []
@@ -36,7 +36,7 @@ for i in df.latitude:
     except:
         True
     counter += 1
-    if distance > 10:
+    if distance > 100:
         distance = 0;
     windspeed.append(distance)
 
