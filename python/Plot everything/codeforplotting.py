@@ -4,6 +4,11 @@ import pandas as pd
 import numpy as np
 
 gpsfrequency = 1
+
+#a function
+def mapRGB(altitude,maxAltitude):
+    return 1 - altitude/maxAltitude
+
 #gets data
 df = pd.read_csv('LOGGER96.txt', sep=" ", header=None)
 df.columns = ["sats", "latitude", "longitude", "altitude", "temperature", "pressure", "time"]
@@ -90,7 +95,13 @@ ax[3].grid()
 
 #for plotting  2d map
 fig,ax = plt.subplots(figsize = (8,7))
-ax.scatter(df.longitude, df.latitude, zorder=1, alpha= 0.4, c='hotpink', s=10)
+counter = 0
+maxAlt = np.nanmax(plot3dAlt)
+for i in plot3dAlt:
+    altitude = plot3dAlt[counter]
+    b = mapRGB(altitude,maxAlt)
+    ax.scatter(arrayLong[counter], arrayLat[counter], zorder=1, alpha= 1, c=(1,b,0), s=10)
+    counter += 1
 ax.set_xlim(BBox[0],BBox[1])
 ax.set_ylim(BBox[2],BBox[3])
 ax.set_xlabel('longitude')
