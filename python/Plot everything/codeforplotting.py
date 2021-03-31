@@ -15,10 +15,15 @@ arrayLat = np.array(df.latitude.tolist())
 plotAlt = np.array(df.altitude.tolist())
 plot3dAlt = np.array(df.altitude.tolist())
 
-
+#getting the boundaries for the 2dimensional map
 BBox = ((np.min(arrayLong[np.nonzero(arrayLong)]),   df.longitude.max(),      
           np.min(arrayLat[np.nonzero(arrayLat)]), df.latitude.max()))
 
+#printing it so we can create a map image based on extreme values
+print()
+print(BBox)
+
+#removing values below zero altitude (sensor noise) and turning gpslatlong values to None type if there is no fix for the 3d map. 
 counter = 0
 for i in arrayLong:
     if plot3dAlt[counter] <= 0:
@@ -30,17 +35,11 @@ for i in arrayLong:
         plot3dAlt[counter] = None
     counter += 1
 
-print()
-print(BBox)
-
 
 #this is for calculating wind speed
-
 R = 6373000.0 #radius earth
 counter = 0
-
 windspeed = []
-
 gpsintervaltime = gpsfrequency**-1
 print("The gps interval set in the python code = ", gpsfrequency, " hz, please check if this is correct")
 for i in df.latitude:
@@ -86,10 +85,10 @@ ax[2].set_ylabel('wind speed (m/s)')
 ax[2].grid()
 ax[3].plot(timelist, plotAlt, color = 'red')
 ax[3].set_xlabel('time (s)')
-ax[3].set_ylabel('temperature (℃)')
+ax[3].set_ylabel('altitude (m)')
 ax[3].grid()
 
-#for plotting the map
+#for plotting  2d map
 fig,ax = plt.subplots(figsize = (8,7))
 ax.scatter(df.longitude, df.latitude, zorder=1, alpha= 0.4, c='hotpink', s=10)
 ax.set_xlim(BBox[0],BBox[1])
@@ -98,7 +97,11 @@ ax.set_xlabel('longitude')
 ax.set_ylabel('latitude')
 ax.imshow(mapimg, zorder=0, extent = BBox, aspect= 'equal')  
 
+#for plotting the 3d map
 fig = plt.figure()
 ax = Axes3D(fig)
-plt.plot(arrayLong,arrayLat,plot3dAlt)
+ax.set_xlabel('longitude')
+ax.set_ylabel('latitude')
+ax.set_zlabel('altitude (m)')
+plt.plot(arrayLong,arrayLat,plot3dAlt, color = 'hotpink')
 plt.show()
