@@ -1,44 +1,66 @@
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 import pandas as pd
-import math
+import numpy as np
 
+gpsfrequency = 1
 #gets data
 df = pd.read_csv('LOGGER96.txt', sep=" ", header=None)
 df.columns = ["sats", "latitude", "longitude", "altitude", "temperature", "pressure", "time"]
 mapimg = plt.imread('map.png')
 
-    
+#turns everything in superior numpy arrays for manipulation
+arrayLong = np.array(df.longitude.tolist())
+arrayLat = np.array(df.latitude.tolist())
+plotAlt = np.array(df.altitude.tolist())
+plot3dAlt = np.array(df.altitude.tolist())
 
-#for easily getting the map image based on the boundaries of the data
-arrayLong = [i for i in df.longitude.tolist() if i != 0]
-arrayLat = [i for i in df.latitude.tolist() if i != 0]
 
-BBox = ((round(min(arrayLong),8),   df.longitude.max(),      
-         round(min(arrayLat),8), df.latitude.max()))
+BBox = ((np.min(arrayLong[np.nonzero(arrayLong)]),   df.longitude.max(),      
+          np.min(arrayLat[np.nonzero(arrayLat)]), df.latitude.max()))
+
+counter = 0
+for i in arrayLong:
+    if plot3dAlt[counter] <= 0:
+        plot3dAlt[counter] = 0
+        plotAlt[counter] = 0
+    if i == 0:
+        arrayLong[counter] = None
+        arrayLat[counter] = None
+        plot3dAlt[counter] = None
+    counter += 1
+
+print()
 print(BBox)
 
-#this is for calculating wind speed, sometimes coordinates fluctuate a bit too much however
+
+#this is for calculating wind speed
+
 R = 6373000.0 #radius earth
 counter = 0
+
 windspeed = []
+
+gpsintervaltime = gpsfrequency**-1
+print("The gps interval set in the python code = ", gpsfrequency, " hz, please check if this is correct")
 for i in df.latitude:
     try: 
-        lat1 = math.radians(df.latitude[counter])
-        lat2 = math.radians(df.latitude[counter+1])
-        lon1 = math.radians(df.longitude[counter])
-        lon2 = math.radians(df.longitude[counter+1])
+        lat1 = np.radians(df.latitude[counter])
+        lat2 = np.radians(df.latitude[counter+1])
+        lon1 = np.radians(df.longitude[counter])
+        lon2 = np.radians(df.longitude[counter+1])
         
         dlat = lat2 - lat1
         dlon = lon2 - lon1
-        a = math.sin(dlat / 2)**2 + math.cos(lat1) * math.cos(lat2) * math.sin(dlon / 2)**2
-        c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+        a = np.sin(dlat / 2)**2 + np.cos(lat1) * np.cos(lat2) * np.sin(dlon / 2)**2
+        c = 2 * np.arctan2(np.sqrt(a), np.sqrt(1 - a))
         distance = R * c
     except:
         True
     counter += 1
-    if distance > 100:
+    if distance > 10:
         distance = 0;
-    windspeed.append(distance)
+    windspeed.append(distance/gpsintervaltime)
 
 #for turning the milliseconds into seconds
 timelist = []
@@ -49,7 +71,7 @@ for i in df.time.tolist():
 
 
 #for plotting temperature, pressure and wind speed
-fig,ax = plt.subplots(3)
+fig,ax = plt.subplots(4)
 ax[0].plot(timelist, df.temperature, color = 'red')
 ax[0].set_xlabel('time (s)')
 ax[0].set_ylabel('temperature (℃)')
@@ -62,6 +84,10 @@ ax[2].plot(timelist, windspeed, color = 'purple')
 ax[2].set_xlabel('time (s)')
 ax[2].set_ylabel('wind speed (m/s)')
 ax[2].grid()
+ax[3].plot(timelist, plotAlt, color = 'red')
+ax[3].set_xlabel('time (s)')
+ax[3].set_ylabel('temperature (℃)')
+ax[3].grid()
 
 #for plotting the map
 fig,ax = plt.subplots(figsize = (8,7))
@@ -71,3 +97,8 @@ ax.set_ylim(BBox[2],BBox[3])
 ax.set_xlabel('longitude')
 ax.set_ylabel('latitude')
 ax.imshow(mapimg, zorder=0, extent = BBox, aspect= 'equal')  
+
+fig = plt.figure()
+ax = Axes3D(fig)
+plt.plot(arrayLong,arrayLat,plot3dAlt)
+plt.show()
