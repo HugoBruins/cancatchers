@@ -21,39 +21,43 @@
 #include <SoftwareSerial.h>
 #include "EBYTE.h"
 
-#define PIN_RX 2
-#define PIN_TX 3
-#define PIN_M0 4
-#define PIN_M1 5
-#define PIN_AX 6
-
+#define PIN_RX 3
+#define PIN_TX 5
+#define PIN_M0 7
+#define PIN_M1 6
+#define PIN_AX 2
 
 // i recommend putting this code in a .h file and including it
 // from both the receiver and sender modules
-struct DATA {
-  float longitude; 
-  float latitude; 
-};
 
 // these are just dummy variables, replace with your own
+struct DATA {
+  unsigned long Count;
+  int Bits;
+  float Volts;
+  float Amps;
+
+};
+
 int Chan;
 DATA MyData;
-unsigned long Last;
 
-// connect to any digital pin to connect to the serial port
-// don't use pin 01 and 1 as they are reserved for USB communications
+// you will need to define the pins to create the serial port
 SoftwareSerial ESerial(PIN_RX, PIN_TX);
+
 
 // create the transceiver object, passing in the serial and pins
 EBYTE Transceiver(&ESerial, PIN_M0, PIN_M1, PIN_AX);
 
 void setup() {
 
-
   Serial.begin(9600);
 
+  // start the transceiver serial port--i have yet to get a different
+  // baud rate to work--data sheet says to keep on 9600
   ESerial.begin(9600);
-  Serial.println("Starting Reader");
+
+  Serial.println("Starting Sender");
 
   // this init will set the pinModes for you
   Transceiver.init();
@@ -76,40 +80,28 @@ void setup() {
   // and address is the same
   Transceiver.PrintParameters();
 
-
 }
 
 void loop() {
 
-  // if the transceiver serial is available, proces incoming data
-  // you can also use Transceiver.available()
+  // measure some data and save to the structure
+  MyData.Count++;
+  MyData.Bits = analogRead(A0);
+  MyData.Volts = MyData.Bits * ( 5.0 / 1024.0 );
 
-
-  if (ESerial.available()) {
-
-    // i highly suggest you send data using structures and not
-    // a parsed data--i've always had a hard time getting reliable data using
-    // a parsing method
-
-    Transceiver.GetStruct(&MyData, sizeof(MyData));
-  // You only really need this library to program these EBYTE units. 
-  // For reading data structures, you can call readBytes directly on the EBYTE Serial object
-  // ESerial.readBytes((uint8_t*)& MyData, (uint8_t) sizeof(MyData));
+  // i highly suggest you send data using structures and not
+  // a parsed data--i've always had a hard time getting reliable data using
+  // a parsing method
+  Transceiver.SendStruct(&MyData, sizeof(MyData));
   
-    // dump out what was just received
-    Serial.print("Longitude: "); Serial.println(MyData.longitude,6);
-    Serial.print("Latitude: "); Serial.println(MyData.latitude,6);
-    // if you got data, update the checker
-    Last = millis();
+  // You only really need this library to program these EBYTE units. 
+  // for writing data structures you can call write directly on the EBYTE Serial object
+  // ESerial.write((uint8_t*) &Data, PacketSize );
+  
 
-  }
-  else {
-    // if the time checker is over some prescribed amount
-    // let the user know there is no incoming data
-    if ((millis() - Last) > 1000) {
-      Serial.println("Searching: ");
-      Last = millis();
-    }
+  // let the use know something was sent
+  Serial.print("Sending: "); Serial.println(MyData.Count);
+  delay(1000);
 
-  }
+
 }
