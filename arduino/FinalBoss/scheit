@@ -1,0 +1,74 @@
+#include <NMEAGPS.h>
+#include <NeoSWSerial.h>
+#include "EBYTE.h"
+#include <GPSport.h>
+
+#define PIN_RX 3
+#define PIN_TX 5
+#define PIN_M0 7
+#define PIN_M1 6
+#define PIN_AX 2
+
+NMEAGPS  gps; // This parses the GPS characters
+gps_fix  fix; // This holds on to the latest values
+
+struct DATA {
+  float longitude = 0; 
+  float latitude = 0; 
+};
+
+int Chan;
+DATA CanSatData;
+
+NeoSWSerial ESerial(PIN_RX, PIN_TX);
+EBYTE Transmitter(&ESerial, PIN_M0, PIN_M1, PIN_AX);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void setup()
+{
+  Serial.begin(9600); 
+
+  gpsPort.begin(9600);
+}
+
+//--------------------------
+
+void loop()
+{
+  Serial.println("Amogus Fard-1");
+  while (gps.available( gpsPort )) {
+    Serial.println("Amogus Fard0");
+    fix = gps.read();
+    doSomethingPlease();
+    
+  }
+}
+
+static void doSomethingPlease()
+{
+  //read temperature and pressure
+  //pressure = bmp.readPressure();
+  //temperature = bmp.readTemperature();
+  //calculate altitude
+  //float pressureDifference = pressure / averagePressure;
+  //float temperatureAltitude = averageTemperature * (pow(pressureDifference, constant));
+  //Altitude = (temperatureAltitude - averageTemperature) / -0.0065;
+  Serial.println("Amogus Fard1");
+  CanSatData.longitude++; 
+  while(!Serial);
+  Transmitter.SendStruct(&CanSatData, sizeof(CanSatData));
+  Serial.print("Sending: "); Serial.println(CanSatData.longitude);
+  Serial.println("Amogus Fard2");
+
+  //write to file
+  //file.print(fix.satellites); file.print(F(" "));
+  //file.print(fix.latitude(), 6); file.print(F(" "));
+  //file.print(fix.longitude(), 6); file.print(F(" "));
+  //file.print(Altitude); file.print(F(" "));
+  //file.print(temperature); file.print(F(" "));
+  //file.print(pressure, 0); file.print(F(" "));
+  //file.println(millis());
+  //sync the file, otherwise it doesn't write with this library
+  //if (!file.sync()) error("sync");
+}
