@@ -76,7 +76,7 @@ void loop()
       float temperature = bmp.readTemperature();
       float pressure = bmp.readPressure();
   
-      //-0.0065 is the lapse rate in the troposphere, 0.190163099 is a constant, defined by (1 / (g / (lapserate * R)))
+      //-0.0065 is the lapse rate in the troposphere, 0.190163099 is a constant, defined by ((a*R)/g)
       //-153.8461538 is the inverse of the lapse rate (-0.0065), I have a feeling that float multiplication is slightly faster than division
       //the altitude is based on terrain altitude, so there has to be no software adjusting during launch
       int altitude = ( ( AVERAGE_TEMPERATURE * (pow( (bmp.readPressure() / AVERAGE_PRESSURE) , 0.190163099)) ) - (AVERAGE_TEMPERATURE) ) * -153.8461538;
