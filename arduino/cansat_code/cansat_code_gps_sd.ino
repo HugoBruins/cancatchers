@@ -60,10 +60,10 @@ void loop()
       float longitude = fix.longitude();
       int sats = fix.satellites; 
     } CansatData;
-
+    
+    logfile.print(CansatData.sats); logfile.print(F(","));
     logfile.print(CansatData.latitude,6); logfile.print(F(","));
     logfile.print(CansatData.longitude,6); logfile.print(F(","));
-    logfile.print(CansatData.sats); logfile.print(F(","));
     logfile.println(millis());
 
     static uint16_t lastFlushTime = 0;
