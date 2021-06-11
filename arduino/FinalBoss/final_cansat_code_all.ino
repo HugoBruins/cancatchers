@@ -80,6 +80,9 @@ void loop()
 {
   while (gps.available( gpsPort )) {
     fix = gps.read();
+    
+    static uint16_t lastLoggingTime  = 0;
+    uint16_t startLoggingTime = millis();
      
     struct CansatData {
       float latitude = fix.latitude();
@@ -103,6 +106,13 @@ void loop()
     logfile.print(CansatData.pressure); logfile.print(F(","));
     logfile.print(CansatData.altitude); logfile.print(F(","));
     logfile.println(millis());
+
+    static uint16_t lastFlushTime = 0;
+    if (startLoggingTime - lastFlushTime > 1000) {
+        lastFlushTime = startLoggingTime;
+        logfile.flush();
+    }
+    lastLoggingTime = (uint16_t) millis() - startLoggingTime;
     
     ResponseStatus rs = e32ttl.sendFixedMessage(0, 3, 4, &CansatData, sizeof(CansatData));
 
