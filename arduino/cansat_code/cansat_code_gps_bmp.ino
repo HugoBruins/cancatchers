@@ -1,3 +1,4 @@
+//this cansat code does everything except for writing to the SD card
 /*
    I will let Thomas handle all the pins here :)
    
