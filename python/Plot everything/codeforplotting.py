@@ -3,47 +3,44 @@ from mpl_toolkits.mplot3d import Axes3D
 import pandas as pd
 import numpy as np
 
-gpsfrequency = 1
+#change these variables if needed!
+gps_interval_time = 1       #time in seconds between receiving gps data
+seperation_mark = ' '       #say you use commas between each send variable, you would make this ','
 
 #gets data
-df = pd.read_csv('LOGGER96.txt', sep=" ", header=None)
+df = pd.read_csv('LOGGER96.txt', sep= seperation_mark, header=None)
 df.columns = ["sats", "latitude", "longitude", "altitude", "temperature", "pressure", "time"]
-mapimg = plt.imread('map.png')
+map_img = plt.imread('map.png')
 
 #turns everything in superior numpy arrays for manipulation
-arrayLong = np.array(df.longitude.tolist())
-arrayLat = np.array(df.latitude.tolist())
-plotAlt = np.array(df.altitude.tolist())
-plot3dAlt = np.array(df.altitude.tolist())
+array_long = np.array(df.longitude.tolist())
+array_lat = np.array(df.latitude.tolist())
+plot_alt = np.array(df.altitude.tolist())
+plot_3d_alt = np.array(df.altitude.tolist())
 
 #getting the boundaries for the 2dimensional map
-BBox = ((np.min(arrayLong[np.nonzero(arrayLong)]),   df.longitude.max(),      
-          np.min(arrayLat[np.nonzero(arrayLat)]), df.latitude.max()))
+boundary_box = ((np.min(array_long[np.nonzero(array_long)]),   df.longitude.max(),      
+          np.min(array_lat[np.nonzero(array_lat)]), df.latitude.max()))
 
 #printing it so we can create a map image based on extreme values
 print()
-print(BBox)
+print(boundary_box)
 
 #removing values below zero altitude (sensor noise) and turning gpslatlong values to None type if there is no fix for the 3d map. 
-counter = 0
-for i in arrayLong:
-    if plot3dAlt[counter] <= 0:
-        plot3dAlt[counter] = 0
-        plotAlt[counter] = 0
-    if i == 0:
-        arrayLong[counter] = None
-        arrayLat[counter] = None
-        plot3dAlt[counter] = None
-    counter += 1
-
+for counter, longitude in enumerate(array_long):
+    if plot_3d_alt[counter] <= 0:
+        plot_3d_alt[counter] = 0
+        plot_alt[counter] = 0
+    if longitude == 0:
+        array_long[counter] = None
+        array_lat[counter] = None
+        plot_3d_alt[counter] = None
 
 #this is for calculating wind speed
-R = 6373000.0 #radius earth
-counter = 0
-windspeed = []
-gpsintervaltime = gpsfrequency**-1
-print("The gps interval set in the python code = ", gpsfrequency, " hz, please check if this is correct")
-for i in df.latitude:
+radius_earth = 6373000.0 #radius earth
+wind_speed = []
+print("The gps interval set in the python code = ", gps_interval_time, " hz, please check if this is correct")
+for counter, i in enumerate(df.latitude):
     try: 
         lat1 = np.radians(df.latitude[counter])
         lat2 = np.radians(df.latitude[counter+1])
@@ -52,15 +49,14 @@ for i in df.latitude:
         
         dlat = lat2 - lat1
         dlon = lon2 - lon1
-        a = np.sin(dlat / 2)**2 + np.cos(lat1) * np.cos(lat2) * np.sin(dlon / 2)**2
+        a = np.sin(dlat / 2) ** 2 + np.cos( lat1 ) * np.cos( lat2 ) * np.sin( dlon / 2 )**2
         c = 2 * np.arctan2(np.sqrt(a), np.sqrt(1 - a))
-        distance = R * c
+        distance = radius_earth * c
     except:
         True
-    counter += 1
     if distance > 10:
         distance = 0;
-    windspeed.append(distance/gpsintervaltime)
+    wind_speed.append(distance / gps_interval_time)
 
 #for turning the milliseconds into seconds
 timelist = []
@@ -68,10 +64,8 @@ for i in df.time.tolist():
     timeval = i / 1000
     timelist.append(timeval)
 
-
-
 #for plotting temperature, pressure and wind speed
-fig,ax = plt.subplots(4)
+fig, ax = plt.subplots(4)
 ax[0].plot(timelist, df.temperature, color = 'red')
 ax[0].set_xlabel('time (s)')
 ax[0].set_ylabel('temperature (℃)')
@@ -80,11 +74,11 @@ ax[1].plot(timelist, df.pressure, color = 'orange')
 ax[1].set_xlabel('time (s)')
 ax[1].set_ylabel('pressure (Pa)')
 ax[1].grid()
-ax[2].plot(timelist, windspeed, color = 'purple')
+ax[2].plot(timelist, wind_speed, color = 'purple')
 ax[2].set_xlabel('time (s)')
 ax[2].set_ylabel('wind speed (m/s)')
 ax[2].grid()
-ax[3].plot(timelist, plotAlt, color = 'red')
+ax[3].plot(timelist, plot_alt, color = 'red')
 ax[3].set_xlabel('time (s)')
 ax[3].set_ylabel('altitude (m)')
 ax[3].grid()
@@ -92,13 +86,13 @@ ax[3].grid()
 #for plotting  2d map
 fig,ax = plt.subplots(figsize = (8,7))
 color_map = plt.cm.get_cmap('hot')
-im = ax.scatter(arrayLong, arrayLat, cmap=color_map, zorder=1, alpha= 1, c=plot3dAlt, s=10)
-fig.colorbar(im, ax=ax, label = "altitude")
-ax.set_xlim(BBox[0],BBox[1])
-ax.set_ylim(BBox[2],BBox[3])
+im = ax.scatter(array_long, array_lat, cmap=color_map, zorder=1, alpha= 1, c=plot_3d_alt, s=10)
+fig.colorbar(im, ax=ax, label = "altitude (m)")
+ax.set_xlim(boundary_box[0],boundary_box[1])
+ax.set_ylim(boundary_box[2],boundary_box[3])
 ax.set_xlabel('longitude')
 ax.set_ylabel('latitude')
-ax.imshow(mapimg, zorder=0, extent = BBox, aspect= 'equal')  
+ax.imshow(map_img, zorder=0, extent = boundary_box, aspect= 'equal')  
 
 #for plotting the 3d map
 fig = plt.figure()
@@ -106,5 +100,5 @@ ax = Axes3D(fig)
 ax.set_xlabel('longitude')
 ax.set_ylabel('latitude')
 ax.set_zlabel('altitude (m)')
-plt.plot(arrayLong,arrayLat,plot3dAlt, color = 'hotpink')
+plt.plot(array_long,array_lat,plot_3d_alt, color = 'hotpink')
 plt.show()
