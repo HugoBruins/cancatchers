@@ -23,9 +23,9 @@ gps_fix  fix;
 
 //the struct that gets send
 struct CansatData {
+  int sats;
   float latitude;
   float longitude;
-  int sats;
 };
 
 void setup()
