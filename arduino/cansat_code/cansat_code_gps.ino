@@ -43,9 +43,9 @@ void loop()
     fix = gps.read();
      
     struct CansatData {
+      int sats = fix.satellites;
       float latitude = fix.latitude();
       float longitude = fix.longitude();
-      int sats = fix.satellites;
     } CansatData;
 
     ResponseStatus rs = e32ttl.sendFixedMessage(0, 3, 4, &CansatData, sizeof(CansatData));
