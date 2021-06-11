@@ -98,13 +98,13 @@ void loop()
       int altitude = ( ( AVERAGE_TEMPERATURE * (pow( (bmp.readPressure() / AVERAGE_PRESSURE) , 0.190163099)) ) - (AVERAGE_TEMPERATURE) ) * -153.8461538;
 
     } CansatData;
-
+    
+    logfile.print(CansatData.sats); logfile.print(F(","));
     logfile.print(CansatData.latitude,6); logfile.print(F(","));
     logfile.print(CansatData.longitude,6); logfile.print(F(","));
-    logfile.print(CansatData.sats); logfile.print(F(","));
+    logfile.print(CansatData.altitude); logfile.print(F(","));
     logfile.print(CansatData.temperature); logfile.print(F(","));
     logfile.print(CansatData.pressure); logfile.print(F(","));
-    logfile.print(CansatData.altitude); logfile.print(F(","));
     logfile.println(millis());
 
     static uint16_t lastFlushTime = 0;
