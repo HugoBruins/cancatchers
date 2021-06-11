@@ -23,9 +23,9 @@
 
 // this struct is the same order as on the transmitter
 struct DATA {
+  int sats;
   float latitude;
   float longitude;
-  int sats;
 };
 
 // these are just dummy variables, replace with your own
@@ -47,9 +47,9 @@ void loop() {
     Transceiver.GetStruct(&cansat_data, sizeof(cansat_data));
     
     //the commas are there so they are easily splitted using python
+    Serial.print(cansat_data.sats); Serial.print(F(","));
     Serial.print(cansat_data.latitude,6); Serial.print(F(","));
     Serial.print(cansat_data.longitude,6); Serial.print(F(","));
-    Serial.print(cansat_data.sats); Serial.print(F(","));
     Serial.println(millis());
 
   }
