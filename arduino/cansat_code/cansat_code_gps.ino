@@ -1,3 +1,4 @@
+//this is the most barebones cansat code, it only transmits GPS data
 /*
    I will let Thomas handle all the pins here :)
    
