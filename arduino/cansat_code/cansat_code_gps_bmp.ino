@@ -28,12 +28,12 @@ float AVERAGE_TEMPERATURE;
 
 //the struct that gets send
 struct CansatData {
+  int sats;
   float latitude;
   float longitude;
-  int sats;
+  float altitude;
   float temperature;
-  float pressure;
-  int altitude;
+  int pressure;
 };
 
 void setup()
