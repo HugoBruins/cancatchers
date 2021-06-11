@@ -3,8 +3,7 @@ from mpl_toolkits.mplot3d import Axes3D
 import pandas as pd
 import numpy as np
 
-#change these variables if needed!
-gps_interval_time = 1       #time in seconds between receiving gps data
+#change this if necessary!
 seperation_mark = ' '       #say you use commas between each send variable, you would make this ','
 
 #gets data
@@ -39,7 +38,6 @@ for counter, longitude in enumerate(array_long):
 #this is for calculating wind speed
 radius_earth = 6373000.0 #radius earth
 wind_speed = []
-print("The gps interval set in the python code = ", gps_interval_time, " hz, please check if this is correct")
 for counter, i in enumerate(df.latitude):
     try: 
         lat1 = np.radians(df.latitude[counter])
@@ -52,11 +50,14 @@ for counter, i in enumerate(df.latitude):
         a = np.sin(dlat / 2) ** 2 + np.cos( lat1 ) * np.cos( lat2 ) * np.sin( dlon / 2 )**2
         c = 2 * np.arctan2(np.sqrt(a), np.sqrt(1 - a))
         distance = radius_earth * c
+        
+        time_difference = ( df.time[counter+1] - df.time[counter] ) / 1000
     except:
         True
     if distance > 10:
         distance = 0;
-    wind_speed.append(distance / gps_interval_time)
+    
+    wind_speed.append(distance / time_difference)
 
 #for turning the milliseconds into seconds
 timelist = []
