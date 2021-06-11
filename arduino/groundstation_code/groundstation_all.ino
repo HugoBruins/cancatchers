@@ -50,12 +50,12 @@ void loop() {
     Transceiver.GetStruct(&cansat_data, sizeof(cansat_data));
     
     //the commas are there so they are easily splitted using python
-    Serial.print(millis()); Serial.print(F(","));
     Serial.print(cansat_data.latitude,6); Serial.print(F(","));
     Serial.print(cansat_data.longitude,6); Serial.print(F(","));
     Serial.print(cansat_data.sats); Serial.print(F(","));
-    Serial.print(cansat_data.temperature,3); Serial.print(F(","));
-    Serial.print(cansat_data.pressure,2); Serial.print(F(","));
-    Serial.println(cansat_data.altitude);
+    Serial.print(cansat_data.temperature); Serial.print(F(","));
+    Serial.print(cansat_data.pressure); Serial.print(F(","));
+    Serial.print(cansat_data.altitude); Serial.print(F(","));
+    Serial.println(millis())
   }
 }
