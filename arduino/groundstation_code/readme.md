@@ -1,4 +1,4 @@
-## Library dependencies:
+## Library dependencies
 - EBYTE.h
 
 ## Extra information
