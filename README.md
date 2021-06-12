@@ -21,7 +21,7 @@ Cansat is a competition where you have to design a little satellite that will go
 ## Parts used groundstation
 
 - Arduino Uno microcontroller.
-- Shiwaki 100mW E32-433T20DT UART LoRa transceiver.
+- Shiwaki 100mW E32-433T20DT UART LoRa transceiver. (based on Ebyte transceiver)
 - A 2-3 dBi 50ohm omnidirectional 433MHz antenna.
 
 ## Programs used to graph the data
