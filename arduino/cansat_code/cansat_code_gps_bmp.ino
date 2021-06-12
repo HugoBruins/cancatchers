@@ -18,8 +18,6 @@
 #include <GPSport.h>
 #include <BMP280_DEV.h>  
 
-
-
 LoRa_E32 e32ttl(3, 5, 2, 7, 6);
 NMEAGPS  gps;
 gps_fix  fix;
@@ -27,12 +25,10 @@ BMP280_DEV bmp; // I2C
 //all the altitude calculation variables
 float AVERAGE_PRESSURE;
 float AVERAGE_TEMPERATURE;
-float temperature;
-float pressure;
 
 
 //the struct that gets send
-struct CansatData {
+struct DATA {
   int sats;
   float latitude;
   float longitude;
@@ -41,8 +37,11 @@ struct CansatData {
   float pressure;
 };
 
+DATA CansatData;
+
 void setup()
 {
+  long startup_time = millis();
   DEBUG_PORT.begin(9600);
   gpsPort.begin(9600); //we may or may not have overclocked our gps module a bit
   e32ttl.begin();
@@ -54,46 +53,48 @@ void setup()
     DEBUG_PORT.println(F("BMP280 failed"));
   }
 
+  bmp.setTimeStandby(TIME_STANDBY_05MS);
   bmp.startNormalConversion();
-  
+
+  float temperature_sample;
+  float pressure_sample;
   //warming up the sensor a bit, otherwise battery power seems to interfere.
   for (int i = 0; i <= 50; i++) {
-    bmp.getCurrentTempPres(temperature, pressure);
-    delay(1);
+    bmp.getCurrentTempPres(temperature_sample, pressure_sample);
   }
+  
   //getting starting pressure and temperature based on a lot of measurements
   for (int i = 0; i <= 499; i++) {
-    bmp.getCurrentTempPres(temperature, pressure);
-    AVERAGE_PRESSURE += temperature;
-    AVERAGE_TEMPERATURE += pressure;
-    delay(1);
+    bmp.getCurrentTempPres(temperature_sample, pressure_sample);
+    AVERAGE_PRESSURE += temperature_sample;
+    AVERAGE_TEMPERATURE += pressure_sample;
   }
-  AVERAGE_PRESSURE /= 500;
+  AVERAGE_PRESSURE = (AVERAGE_PRESSURE*100) / 500;
   AVERAGE_TEMPERATURE = (AVERAGE_TEMPERATURE / 500) + 273.15;
-  DEBUG_PORT.println(AVERAGE_PRESSURE);
-  DEBUG_PORT.println(AVERAGE_TEMPERATURE);
+  
+  DEBUG_PORT.print(F("Average pressure and temperature: "));
+  DEBUG_PORT.print(AVERAGE_PRESSURE); DEBUG_PORT.print(F(","));
+  DEBUG_PORT.print(AVERAGE_TEMPERATURE); DEBUG_PORT.print(F(","));
+  DEBUG_PORT.println(millis() - startup_time);
 }
 
 void loop()
 {
   while (gps.available( gpsPort )) {
     fix = gps.read();
-    bmp.getCurrentTempPres(temperature, pressure);
-    struct CansatData {
-      float latitude = fix.latitude();
-      float longitude = fix.longitude();
-      int sats = fix.satellites;
-      float temperature = temperature;
-      float pressure = pressure;
-  
-      //-0.0065 is the lapse rate in the troposphere, 0.190163099 is a constant, defined by ((a*R)/g)
-      //-153.8461538 is the inverse of the lapse rate (-0.0065), I have a feeling that float multiplication is slightly faster than division
-      //the altitude is based on terrain altitude, so there has to be no software adjusting during launch
-      float altitude = ( ( AVERAGE_TEMPERATURE * (pow( (pressure / AVERAGE_PRESSURE) , 0.190163099)) ) - (AVERAGE_TEMPERATURE) ) * -153.8461538;
+    int startup_time = millis();
 
-    } CansatData;
-
+    //get all the data
+    CansatData.sats = fix.satellites;
+    CansatData.latitude = fix.latitude();
+    CansatData.longitude = fix.longitude();
+    bmp.getCurrentTempPres(CansatData.temperature, CansatData.pressure);
+    CansatData.pressure *= 100; //imagine using hectopascal, kinda weird there library
+    CansatData.altitude = ( ( AVERAGE_TEMPERATURE * (pow( (CansatData.pressure / AVERAGE_PRESSURE) , 0.190163099)) ) - (AVERAGE_TEMPERATURE) ) * -153.8461538;
+    
+    //send the data
     ResponseStatus rs = e32ttl.sendFixedMessage(0, 3, 4, &CansatData, sizeof(CansatData));
-    DEBUG_PORT.println(F(":)"));
+    
+    DEBUG_PORT.println(millis() - startup_time);
   }
 }
