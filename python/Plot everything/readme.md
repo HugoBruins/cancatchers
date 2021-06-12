@@ -6,7 +6,7 @@ The data from these pictures is taken from a caveman distance test with our old 
 
 ## How to get the code working
 
-Make sure you have a nice python IDE installed, and install the following libraries for python using pip:
+Make sure you have a nice python editor installed, and install the following libraries for python using pip:
 
 - matplotlib
 - pandas
