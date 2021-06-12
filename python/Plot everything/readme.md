@@ -14,7 +14,7 @@ Make sure you have a nice python IDE installed, and install the following librar
 
 Now drop the code into a folder, and also drop LOGGER96.txt and map.png in that same folder, and run the code, voila, it works! (hopefully)
 
-## how can I get my own map image?
+## How can I get my own map image?
 
 - run the code once with your own data file
 - In the console it will print a boundary box ( (4.96607, 4.970542, 51.848461, 51.852519) for the example in the github ) These are the maximum / minumum longitudes and latitudes.
