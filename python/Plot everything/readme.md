@@ -12,7 +12,7 @@ Make sure you have a nice python editor installed, and install the following lib
 - pandas
 - numpy
 
-Now drop **_code_for_plotting.py_** into a folder, and also drop **_your_cansat_data.txt_** and **_map.png_** in that same folder, and run **_code_for_plotting.py_**.
+Now drop **_code_for_plotting.py_** into a folder, and also drop **_your_cansat_data.txt_** and **_map.png_** in that same folder, and run **_code_for_plotting.py_**. The code works if you get exactly the same graphs as given in the pictures at the bottom of this readme. 
 
 ## How can I use my own text file name?
 
