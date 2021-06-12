@@ -5,9 +5,10 @@ import numpy as np
 
 #change this if necessary!
 seperation_mark = ' '       #say you use commas between each send variable, you would make this ','
+data_file_name = 'LOGGER96.txt'
 
 #gets data
-df = pd.read_csv('LOGGER96.txt', sep= seperation_mark, header=None)
+df = pd.read_csv(data_file_name, sep= seperation_mark, header=None)
 df.columns = ["sats", "latitude", "longitude", "altitude", "temperature", "pressure", "time"]
 map_img = plt.imread('map.png')
 
@@ -77,7 +78,7 @@ ax[1].set_ylabel('pressure (Pa)')
 ax[1].grid()
 ax[2].plot(timelist, wind_speed, color = 'purple')
 ax[2].set_xlabel('time (s)')
-ax[2].set_ylabel('wind speed (m/s)')
+ax[2].set_ylabel('wind / horizontal speed (m/s)')
 ax[2].grid()
 ax[3].plot(timelist, plot_alt, color = 'red')
 ax[3].set_xlabel('time (s)')
