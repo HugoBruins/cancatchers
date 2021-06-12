@@ -4,7 +4,7 @@ Have some kind of switch between the TX pin on GPS and the RX or 0 pin on your A
 
 ## Library dependencies
 
-Install these before trying the code
+Install these before trying the code:
 - neogps.h
 - neohwserial.h
 - BMP280_dev.h
