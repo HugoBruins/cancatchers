@@ -9,7 +9,7 @@ Install these before trying the code
 
 ## Getting the GPS module working
 
-Please follow the following steps to get the GPS working
+Please follow the following steps to get the GPS working:
 
 - Make sure there is a switch or something between the TX pin on GPS and RX / 0 pin on the Arduino, this switch needs to be off every time you upload code. The switch needs to be on while running the code however, but you can still use the serial monitor.
 - locate the library folder of neoGPS
