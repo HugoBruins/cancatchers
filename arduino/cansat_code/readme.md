@@ -1,5 +1,6 @@
-## The libraries you will need:
+## Library dependencies
 
+Install these before trying the code
 - neogps.h
 - neohwserial.h
 - BMP280_dev.h
@@ -12,3 +13,12 @@
 - In ._../libraries/neogps/src/GPSport.h_ comment whatever was commented and uncomment _//#include <NeoHWSerial.h>_.
 - Now run the NMEAorder example and take note of the last sentence given trough the debug_port.
 - Go to .../libraries/neogps/src/NMEAGPS_cfg.h and in _#define LAST_SENTENCE_IN_INTERVAL NMEAGPS::NMEA__**GLL**, change **GLL** to whatever your last sentence was in step 3.
+
+## extra information
+
+I recommendd testing all the codes one by one in the following order:
+
+1. cansat_code_gps.ino
+2. cansat_code_gps_sd.ino
+3. cansat_code_gps_bmp.ino
+4. cansat_code_all.ino
