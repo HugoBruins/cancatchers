@@ -12,7 +12,7 @@ Cansat is a competition where you have to design a little satellite that will go
 - Adafruit bmp 280 temperature and pressure sensor.
 - U-blox neo-7m gps module.
 - A cheap micro sd card reader.
-- Shiwaki 100mW E32-433T20DT UART LoRa transceiver.
+- Shiwaki 100mW E32-433T20DT UART LoRa transceiver.  (based on Ebyte transceiver)
 - A 2dBi SMA omnidirectional 433MHz antenna.
 - A buck-converter set to 3.3V.
 - 2 3.7 LiPo 1 cel batteries in parallel.
