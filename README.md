@@ -4,7 +4,7 @@ There are 2 folders, one for the arduino code and one for the python code, insid
 
 ## What is Cansat
 
-Cansat is a competition where you have to design a little satellite that will go 1km into the air with a rocket and you have to receive some data from it and hopefully get it recovered.
+Cansat is a competition where you have to design a little satellite that will go 1km into the air by rocket and you have to receive some data from it and hopefully get it recovered.
 
 ## Parts used for our Cansat
 
