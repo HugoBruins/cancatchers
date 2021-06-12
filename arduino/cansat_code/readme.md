@@ -21,7 +21,7 @@ Please follow the following steps to get the GPS working:
 - Now run the NMEAorder example and take note of the last sentence given trough the debug_port.
 - Go to .../libraries/neogps/src/NMEAGPS_cfg.h and in _#define LAST_SENTENCE_IN_INTERVAL NMEAGPS::NMEA__**GLL**, change **GLL** to whatever your last sentence was in step 3.
 
-## extra information
+## Extra information
 
 I recommend testing all the codes one by one in the following order:
 
