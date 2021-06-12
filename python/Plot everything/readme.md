@@ -20,7 +20,7 @@ Go to the top of the code and change the **_data_file_name_** variable to your o
 
 ## How can I get my own map image?
 
-- run the code once with your own data file
+- Run the code once with your own data file
 - In the console it will print a boundary box ( (4.96607, 4.970542, 51.848461, 51.852519) for the example in the github ) These are the maximum / minumum longitudes and latitudes.
 -  Go to [openstreetmap](https://www.openstreetmap.org "openstreetmap") and fill in these values in the box over at the left side. 
 -  Now go to the top right corner and press the 'share' button.
