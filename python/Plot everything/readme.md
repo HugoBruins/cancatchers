@@ -14,7 +14,15 @@ Make sure you have a nice python IDE installed, and install the following librar
 
 Now drop the code into a folder, and also drop LOGGER96.txt and map.png in that same folder, and run the code, voila, it works! (hopefully)
 
-To get your own map image, run the code once with your own data file, and in the console it will print a boundary box, these are the maximum / minumum longitudes and latitudes, now go to openstreetmap.org and fill in these values in the box over at the left side. Now go to the top right corner and press the 'share' button. Here check the box 'modified picture dimensions', and manually drag the corners of the new appearing box over the old one that fits the boundaries, pick a nice scale that gives good image resolution and download the png, change the name of this png to map and drop it into the same folder as the code. 
+## how can I get my own map image?
+
+- run the code once with your own data file
+- In the console it will print a boundary box ( (4.96607, 4.970542, 51.848461, 51.852519) for the example in the github ) These are the maximum / minumum longitudes and latitudes.
+-  Go to openstreetmap.org and fill in these values in the box over at the left side. 
+-  Now go to the top right corner and press the 'share' button.
+-  Here check the box 'modified picture dimensions', and manually drag the corners of the new appearing box over the old one that fits the given boundary
+-  Pick a nice scale that gives good image resolution and download the png.
+-  Change the name of this png to map.png and drop it into the same folder as the code.
 
 
 ## Graphs:
