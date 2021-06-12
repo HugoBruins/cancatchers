@@ -1,3 +1,3 @@
 # Graphs:
 
-![alt text](https://github.com/HugoBruins/cancatchers/blob/master/python/Plot%20everything/figure_3.png =100x20)
+![3d map](https://user-images.githubusercontent.com/25268098/121771595-94505380-cb70-11eb-9d5d-ccbaeb07c86f.png)
