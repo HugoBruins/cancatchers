@@ -1,7 +1,7 @@
 ## Library dependencies
 - EBYTE
 
-(the other e32 library we used for the cansat code has some weird issues, receiving data twice as slow as the set delay)
+(The other e32 library we used for the cansat code has some weird issues, receiving data twice as slow as the set delay.)
 
 ## Extra information
 - It is important that if you have the temperature sensor with gps working, that you use the groundstation_all.ino, because the received struct has to be the same as the send struct.
