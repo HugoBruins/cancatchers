@@ -18,7 +18,7 @@ Now drop the code into a folder, and also drop LOGGER96.txt and map.png in that 
 
 - run the code once with your own data file
 - In the console it will print a boundary box ( (4.96607, 4.970542, 51.848461, 51.852519) for the example in the github ) These are the maximum / minumum longitudes and latitudes.
--  Go to <openstreetmap.org> and fill in these values in the box over at the left side. 
+-  Go to [openstreetmap](https://www.openstreetmap.org] and fill in these values in the box over at the left side. 
 -  Now go to the top right corner and press the 'share' button.
 -  Here check the box 'modified picture dimensions', and manually drag the corners of the new appearing box over the old one that fits the given boundary
 -  Pick a nice scale that gives good image resolution and download the png.
