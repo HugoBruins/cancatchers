@@ -12,7 +12,11 @@ Make sure you have a nice python IDE installed, and install the following librar
 - pandas
 - numpy
 
-Now drop the code into a folder, and also drop LOGGER96.txt and map.png in that same folder, and run the code, voila, it works! (hopefully)
+Now drop the code into a folder, and also drop LOGGER96.txt and map.png in that same folder, and run the code.
+
+## How can I use my own text file name?
+
+Go to the top of the code and change the _data_file_name_ variable to your own file name
 
 ## How can I get my own map image?
 
