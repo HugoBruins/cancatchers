@@ -15,7 +15,8 @@ Cansat is a competition where you have to design a little satellite that will go
 - Shiwaki 100mW E32-433T20DT UART LoRa transceiver.  (based on Ebyte transceiver)
 - A 2dBi SMA omnidirectional 433MHz antenna.
 - A buck-converter set to 3.3V.
-- 2 3.7 LiPo 1 cel batteries in parallel.
+- 2x 3.7 LiPo 1 cel batteries in parallel.
+- A master switch between batteries and microcontroller
 - A 3d printed inner and outer case.
 
 ## Parts used groundstation
