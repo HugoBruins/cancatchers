@@ -16,7 +16,7 @@ Install these before trying the code
 
 ## extra information
 
-I recommendd testing all the codes one by one in the following order:
+I recommend testing all the codes one by one in the following order:
 
 1. cansat_code_gps.ino
 2. cansat_code_gps_sd.ino
