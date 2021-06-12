@@ -5,7 +5,7 @@ import numpy as np
 
 #change this if necessary!
 seperation_mark = ' '       #say you use commas between each send variable, you would make this ','
-data_file_name = 'LOGGER96.txt'
+data_file_name = 'your_cansat_data.txt'
 
 #gets data
 df = pd.read_csv(data_file_name, sep= seperation_mark, header=None)
