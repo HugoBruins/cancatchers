@@ -1,9 +1,11 @@
-The libraries you will need:
+##The libraries you will need:
 
-- neogps
-- neohwserial
-- BMP280_dev
-- Sdfat
-- lora_32tll library (NOT EBYTE FOR CANSAT CODE!)
+- neogps.h
+- neohwserial.h
+- BMP280_dev.h
+- Sdfat.h
+- lora_32tll.h
 
-good luck
+##for the GPS to work, you need to configure neogps as followed (go to the neogps library file)
+
+in *.../libraries/neogps/src/GPSport.h* comment whatever was commented and uncomment *//#include <NeoHWSerial.h>*
