@@ -16,7 +16,7 @@ Now drop **_code_for_plotting.py_** into a folder, and also drop **_your_cansat_
 
 ## How can I use my own text file name?
 
-Go to the top of the code and change the _data_file_name_ variable to your own file name
+Go to the top of the code and change the **_data_file_name_** variable to your own file name. (don't forget the .txt)
 
 ## How can I get my own map image?
 
