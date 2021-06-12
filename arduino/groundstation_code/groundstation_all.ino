@@ -53,7 +53,7 @@ void loop() {
     Serial.print(cansat_data.sats); Serial.print(F(","));
     Serial.print(cansat_data.latitude,6); Serial.print(F(","));
     Serial.print(cansat_data.longitude,6); Serial.print(F(","));
-    //Serial.print(cansat_data.altitude); Serial.print(F(","));
+    Serial.print(cansat_data.altitude); Serial.print(F(","));
     Serial.print(cansat_data.temperature); Serial.print(F(","));
     Serial.print(cansat_data.pressure); Serial.print(F(","));
     Serial.println(millis());
