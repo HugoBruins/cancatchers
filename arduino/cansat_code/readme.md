@@ -1,3 +1,7 @@
+## important
+
+Have some kind of switch between the TX pin on GPS and the RX or 0 pin on your Arduino, you need to turn this **off** every single time you upload code, and turn this switch **on** when you try the code.
+
 ## Library dependencies
 
 Install these before trying the code
