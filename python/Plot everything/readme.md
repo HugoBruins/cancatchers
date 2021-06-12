@@ -4,6 +4,19 @@ The code makes 3 different plots as of now, one has all the data graphs of altit
 
 The data from these pictures is taken from a caveman distance test with our old transceiver modules. 
 
+## How to get the code working
+
+Make sure you have a nice python IDE installed, and install the following libraries for python using pip:
+
+- matplotlib
+- pandas
+- numpy
+
+Now drop the code into a folder, and also drop LOGGER96.txt and map.png in that same folder, and run the code, voila, it works! (hopefully)
+
+To get your own map image, run the code once with your own data file, and in the console it will print a boundary box, these are the maximum / minumum longitudes and latitudes, now go to openstreetmap.org and fill in these values in the box over at the left side. Now go to the top right corner and press the 'share' button. Here check the box 'modified picture dimensions', and manually drag the corners of the new appearing box over the old one that fits the boundaries, pick a nice scale that gives good image resolution and download the png, change the name of this png to map and drop it into the same folder as the code. 
+
+
 ## Graphs:
 
 ### The temperature / pressure / wind speed / altitude plot
