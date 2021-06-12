@@ -1,6 +1,6 @@
 ## Important
 
-Have some kind of switch or jumper between the TX pin on GPS and the RX or 0 pin on your Arduino, you need to turn this **off** every single time you upload code, and turn this switch **on** when you try the code.
+Have some kind of switch or jumper between the TX pin on GPS and the RX or 0 pin on your Arduino, you need to turn this **off** every single time you upload code, and turn this switch **on** when you try the code. Otherwise you might send some random stuff to the GPS module while uploading code.
 
 ## Library dependencies
 
