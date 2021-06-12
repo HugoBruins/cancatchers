@@ -18,6 +18,7 @@ Cansat is a competition where you have to design a little satellite that will go
 - 2x 3.7 LiPo 1 cel batteries in parallel.
 - A master switch between batteries and microcontroller
 - A 3d printed inner and outer case.
+- A parachute made from neon pink (good visibility) parachute fabric.
 
 ## Parts used groundstation
 
