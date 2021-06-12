@@ -6,7 +6,7 @@
 - Sdfat.h
 - lora_32tll.h
 
-## for the GPS to work, you need to configure neogps
+## For the GPS to work, you need to configure neogps
 
 - Make sure there is a switch or something between the TX pin on GPS and RX / 0 pin on the Arduino, this switch needs to be off every time you upload code.
 - In ._../libraries/neogps/src/GPSport.h_ comment whatever was commented and uncomment _//#include <NeoHWSerial.h>_
