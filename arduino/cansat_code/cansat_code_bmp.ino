@@ -3,22 +3,35 @@
 /////////////////////////////////////////////////////////////////////////////////
 
 #include <BMP280_DEV.h> 
-
-float temperature, pressure, altitude;         
+#include <LoRa_E32.h>
+    
 float AVERAGE_TEMPERATURE, AVERAGE_PRESSURE;
+float temperature_sample, pressure_sample;
+
 BMP280_DEV bmp280;
+LoRa_E32 e32ttl(3, 5, 2, 7, 6);
+
+struct CansatData {
+  int sats = 13;
+  float latitude;
+  float longitude;
+  int altitude;
+  int temperature;
+  long pressure;
+  long time;
+};
 
 void setup() 
 {
   Serial.begin(9600);
+  e32ttl.begin();
+  delay(100);
+  
   if (!bmp280.begin(0x76)) {
     Serial.println(F("BMP280 failed"));
   }
   bmp280.setTimeStandby(TIME_STANDBY_05MS);
   bmp280.startNormalConversion();
-
-  float temperature_sample;
-  float pressure_sample;
 
   for (int i = 0; i <= 50; i++) {
     bmp280.getCurrentTempPres(temperature_sample, pressure_sample);
@@ -40,12 +53,19 @@ void setup()
 
 void loop() 
 {
-  bmp280.getCurrentTempPres(temperature, pressure);
-  pressure *= 100;
+  bmp280.getCurrentTempPres(temperature_sample, pressure_sample);
+  pressure_sample *= 100;
 
-  altitude = (AVERAGE_TEMPERATURE / -0.0065) * ( pow(pressure / AVERAGE_PRESSURE, 0.19022806) - 1 );
+  
+  struct CansatData {
+    int sats = 13;
+    float latitude = 47.4512412;
+    float longitude = 4.723414;
+    int altitude = (AVERAGE_TEMPERATURE / -0.0065) * ( pow(pressure_sample / AVERAGE_PRESSURE, 0.19022806) - 1 );
+    int temperature = temperature_sample * 100;
+    long pressure = pressure_sample;
+    long time = millis();
+  } CansatData;
 
-  Serial.print(temperature);  Serial.print(F(","));
-  Serial.print(pressure); Serial.print((","));
-  Serial.println(altitude);
+  ResponseStatus rs = e32ttl.sendFixedMessage(0, 3, 4, &CansatData, sizeof(CansatData));
 }
