@@ -30,8 +30,7 @@ struct DATA {
   float longitude;
   int altitude;
   int temperature;
-  long pressure;
-  long time;
+  int pressure;
 };
 
 // these are just dummy variables, replace with your own
@@ -61,8 +60,7 @@ void loop() {
     Serial.print(cansat_data.longitude, 6); Serial.print(F(","));
     Serial.print(cansat_data.altitude); Serial.print(F(","));
     Serial.print(float(cansat_data.temperature) / 100); Serial.print(F(","));
-    Serial.print(cansat_data.pressure); Serial.print(F(","));
-    Serial.print(cansat_data.time); Serial.print(F(","));
+    Serial.print(long(cansat_data.pressure) * 10); Serial.print(F(","));
     Serial.println(millis() - previous_time);
     previous_time = millis();
   }
