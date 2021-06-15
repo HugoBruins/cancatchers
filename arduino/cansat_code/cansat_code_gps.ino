@@ -1,4 +1,4 @@
-//this is the most barebones cansat code, it only transmits GPS data
+//this cansat code does everything except for writing to the SD card
 /*
    I will let Thomas handle all the pins here :)
    
@@ -12,43 +12,96 @@
    GND        ----- GND
 */
 
-#include <Arduino.h>
 #include <LoRa_E32.h>
 #include <NMEAGPS.h>
 #include <GPSport.h>
+#include <BMP280_DEV.h>  
 
 LoRa_E32 e32ttl(3, 5, 2, 7, 6);
 NMEAGPS  gps;
 gps_fix  fix;
+BMP280_DEV bmp; // I2C
+//all the altitude calculation variables
+float AVERAGE_PRESSURE;
+float AVERAGE_TEMPERATURE;
+
 
 //the struct that gets send
 struct CansatData {
   int sats;
   float latitude;
   float longitude;
+  float altitude;
+  float temperature;
+  float pressure;
 };
+
 
 void setup()
 {
+  long startup_time = millis();
   DEBUG_PORT.begin(9600);
-  gpsPort.begin(115200); //we may or may not have overclocked our gps module a bit
+  gpsPort.begin(9600); //we may or may not have overclocked our gps module a bit
   e32ttl.begin();
   while (!Serial);
   delay(100);
+  
+  //bmp module
+  if (!bmp.begin(0x76)) {
+    DEBUG_PORT.println(F("BMP280 failed"));
+  }
+
+  bmp.setTimeStandby(TIME_STANDBY_62MS);
+  bmp.startNormalConversion();
+
+  float temperature_sample;
+  float pressure_sample;
+  //warming up the sensor a bit, otherwise battery power seems to interfere.
+  for (int i = 0; i <= 50; i++) {
+    bmp.getCurrentTempPres(temperature_sample, pressure_sample);
+  }
+  
+  //getting starting pressure and temperature based on a lot of measurements
+  for (int i = 0; i <= 499; i++) {
+    bmp.getTempPres(temperature_sample, pressure_sample);
+    AVERAGE_PRESSURE += temperature_sample + 273.15;
+    AVERAGE_TEMPERATURE += pressure_sample * 100;
+  }
+
+  
+  AVERAGE_PRESSURE /= 500;
+  AVERAGE_TEMPERATURE /= 500;
+
+  
+  
+  DEBUG_PORT.print(F("Average pressure and temperature: "));
+  DEBUG_PORT.print(AVERAGE_PRESSURE); DEBUG_PORT.print(F(", "));
+  DEBUG_PORT.print(AVERAGE_TEMPERATURE - 273.15); DEBUG_PORT.print(F(", "));
+  DEBUG_PORT.print(millis() - startup_time);
 }
 
 void loop()
 {
+
   while (gps.available( gpsPort )) {
     fix = gps.read();
-     
-    struct CansatData {
-      int sats = fix.satellites;
-      float latitude = fix.latitude();
-      float longitude = fix.longitude();
-    } CansatData;
+    DEBUG_PORT.print( fix.latitude(), 6 );
 
-    ResponseStatus rs = e32ttl.sendFixedMessage(0, 3, 4, &CansatData, sizeof(CansatData));
-    DEBUG_PORT.println(F(":)"));
+    //get all the data
+
+//    struct CansatData {
+//      int sats = fix.satellites;
+//      float latitude = fix.latitude();
+//      float longitude = fix.longitude();
+//    } CansatData;
+//    bmp.getCurrentTempPres(CansatData.temperature, CansatData.pressure);
+//    CansatData.pressure *= 100; //imagine using hectopascal, kinda weird there library
+//    CansatData.altitude = ( ( AVERAGE_TEMPERATURE * (pow( (CansatData.pressure / AVERAGE_PRESSURE) , 0.190163099)) ) - (AVERAGE_TEMPERATURE) ) * -153.8461538;
+    
+    //send the data
+//    ResponseStatus rs = e32ttl.sendFixedMessage(0, 3, 4, &CansatData, sizeof(CansatData));
+    
+    //DEBUG_PORT.println(millis() - startup_time);
+    
   }
 }
