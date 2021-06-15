@@ -20,15 +20,18 @@
 #define PIN_M1 5
 #define PIN_AX 6
 
+float previous_time = 0;
+
 
 // this struct is the same order as on the transmitter
 struct DATA {
   int sats;
   float latitude;
   float longitude;
-  float altitude;
-  float temperature;
-  float pressure;
+  int altitude;
+  int temperature;
+  long pressure;
+  long time;
 };
 
 // these are just dummy variables, replace with your own
@@ -37,7 +40,7 @@ SoftwareSerial ESerial(PIN_RX, PIN_TX);
 EBYTE Transceiver(&ESerial, PIN_M0, PIN_M1, PIN_AX);
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
   ESerial.begin(9600);
   Serial.println(F("Starting Reader"));
   Transceiver.init();
@@ -47,15 +50,20 @@ void setup() {
 
 void loop() {
   if (ESerial.available()) {
+
     Transceiver.GetStruct(&cansat_data, sizeof(cansat_data));
     
+
     //the commas are there so they are easily splitted using python
+    // Serial.print(cansat_data.sats); Serial.print(F(","));
     Serial.print(cansat_data.sats); Serial.print(F(","));
-    Serial.print(cansat_data.latitude,6); Serial.print(F(","));
-    Serial.print(cansat_data.longitude,6); Serial.print(F(","));
+    Serial.print(cansat_data.latitude, 6); Serial.print(F(","));
+    Serial.print(cansat_data.longitude, 6); Serial.print(F(","));
     Serial.print(cansat_data.altitude); Serial.print(F(","));
-    Serial.print(cansat_data.temperature); Serial.print(F(","));
+    Serial.print(float(cansat_data.temperature) / 100); Serial.print(F(","));
     Serial.print(cansat_data.pressure); Serial.print(F(","));
-    Serial.println(millis());
+    Serial.print(cansat_data.time); Serial.print(F(","));
+    Serial.println(millis() - previous_time);
+    previous_time = millis();
   }
 }
