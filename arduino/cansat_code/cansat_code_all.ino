@@ -1,111 +1,90 @@
-  
-//72% dynamic memory :(
-//SDfat is actually a garbage library, change my mind (normal SD card library is even worse though)
-/*
-   I will let Thomas handle all the pins here :)
-   
-   E32-TTL-100----- Arduino UNO or esp8266
-   M0         ----- 3.3v (To config) GND (To send) 7 (To dinamically manage)
-   M1         ----- 3.3v (To config) GND (To send) 6 (To dinamically manage)
-   TX         ----- RX PIN 2 (PullUP)
-   RX         ----- TX PIN 3 (PullUP & Voltage divider)
-   AUX        ----- Not connected (5 if you connect)
-   VCC        ----- 3.3v/5v
-   GND        ----- GND
-*/
-
-#include <Arduino.h>
-#include <LoRa_E32.h>
+/////////////////////////////////////////////////////////////////////////////////
+// BMP + GPS + Transmission + SD card
+// 68% Dynamic memory! 💪
+/////////////////////////////////////////////////////////////////////////////////
 #include <NMEAGPS.h>
+#include <BMP280_DEV.h> 
+#include <LoRa_E32.h>
 #include <GPSport.h>
-#include <BMP280_DEV.h>
 #include <SdFat.h>
 #include <SPI.h>
-
-LoRa_E32 e32ttl(3, 5, 2, 7, 6);
-NMEAGPS  gps;
-gps_fix  fix;
-BMP280_DEV bmp; // I2C
-SdFat SD;
-//all the altitude calculation variables
-float AVERAGE_PRESSURE;
-float AVERAGE_TEMPERATURE;
+    
+float AVERAGE_TEMPERATURE, AVERAGE_PRESSURE;
+float temperature_sample, pressure_sample;
+long last_time;
 const int chipSelect = 4;
+
+BMP280_DEV bmp280;
+NMEAGPS  gps;
+LoRa_E32 e32ttl(3, 5, 2, 7, 6);
+SdFat SD;
+
+gps_fix  fix;
 File logfile;
 
-//the struct that gets send
-struct DATA {
-  int sats;
+struct CansatData {
+  int sats = 13;
   float latitude;
   float longitude;
-  float altitude;
-  float temperature;
-  float pressure;
+  int altitude;
+  int temperature;
+  int pressure;
+  long time;
 };
 
-DATA CansatData;
-
-void setup()
+void setup() 
 {
-  long startup_time = millis();
   DEBUG_PORT.begin(9600);
-  gpsPort.begin(9600); //we may or may not have overclocked our gps module a bit
   e32ttl.begin();
-  while (!DEBUG_PORT);
+  gpsPort.begin(9600);
   delay(100);
-
-  //sd card
-  initSD();
   
-  //bmp module
-  if (!bmp.begin(0x76)) {
+  if (!bmp280.begin(0x76)) {
     DEBUG_PORT.println(F("BMP280 failed"));
   }
+  bmp280.setTimeStandby(TIME_STANDBY_05MS);
+  bmp280.startNormalConversion();
 
-  bmp.setTimeStandby(TIME_STANDBY_05MS);
-  bmp.startNormalConversion();
-
-  float temperature_sample;
-  float pressure_sample;
-  //warming up the sensor a bit, otherwise battery power seems to interfere.
   for (int i = 0; i <= 50; i++) {
-    bmp.getCurrentTempPres(temperature_sample, pressure_sample);
+    bmp280.getCurrentTempPres(temperature_sample, pressure_sample);
   }
-  
-  //getting starting pressure and temperature based on a lot of measurements
+
   for (int i = 0; i <= 499; i++) {
-    bmp.getCurrentTempPres(temperature_sample, pressure_sample);
-    AVERAGE_PRESSURE += temperature_sample;
-    AVERAGE_TEMPERATURE += pressure_sample;
+    bmp280.getCurrentTempPres(temperature_sample, pressure_sample);
+    AVERAGE_PRESSURE += pressure_sample * 100;
+    AVERAGE_TEMPERATURE += temperature_sample + 273.15;
   }
-  AVERAGE_PRESSURE = (AVERAGE_PRESSURE*100) / 500;
-  AVERAGE_TEMPERATURE = (AVERAGE_TEMPERATURE / 500) + 273.15;
+  AVERAGE_PRESSURE = AVERAGE_PRESSURE / 500;
+  AVERAGE_TEMPERATURE = AVERAGE_TEMPERATURE / 500;
   
   DEBUG_PORT.print(F("Average pressure and temperature: "));
   DEBUG_PORT.print(AVERAGE_PRESSURE); DEBUG_PORT.print(F(","));
-  DEBUG_PORT.print(AVERAGE_TEMPERATURE); DEBUG_PORT.print(F(","));
-  DEBUG_PORT.println(millis() - startup_time);
+  DEBUG_PORT.print(AVERAGE_TEMPERATURE);
+  delay(100);
+  initSD();
+  delay(200);
 }
 
-void loop()
+void loop() 
 {
   while (gps.available( gpsPort )) {
     fix = gps.read();
-    int startup_time = millis();
-
-    //for sd card flushing
     static uint16_t lastLoggingTime  = 0;
     uint16_t startLoggingTime = millis();
+    
+    bmp280.getCurrentTempPres(temperature_sample, pressure_sample);
+    pressure_sample *= 100;
 
-    //get all the data
-    CansatData.sats = fix.satellites;
-    CansatData.latitude = fix.latitude();
-    CansatData.longitude = fix.longitude();
-    bmp.getCurrentTempPres(CansatData.temperature, CansatData.pressure);
-    CansatData.pressure *= 100; //imagine using hectopascal, kinda weird there library
-    CansatData.altitude = ( ( AVERAGE_TEMPERATURE * (pow( (CansatData.pressure / AVERAGE_PRESSURE) , 0.190163099)) ) - (AVERAGE_TEMPERATURE) ) * -153.8461538;
+    
+    struct CansatData {
+      int sats = fix.satellites;
+      float latitude = fix.latitude();
+      float longitude = fix.longitude();
+      int altitude = (AVERAGE_TEMPERATURE / -0.0065) * ( pow(pressure_sample / AVERAGE_PRESSURE, 0.19022806) - 1 );
+      int temperature = temperature_sample * 100;
+      int pressure = pressure_sample / 10;
+    } CansatData;
 
-    //log to sd card
     logfile.print(CansatData.sats); logfile.print(F(","));
     logfile.print(CansatData.latitude,6); logfile.print(F(","));
     logfile.print(CansatData.longitude,6); logfile.print(F(","));
@@ -113,7 +92,7 @@ void loop()
     logfile.print(CansatData.temperature,2); logfile.print(F(","));
     logfile.print(CansatData.pressure,1); logfile.print(F(","));
     logfile.println(millis());
-
+    
     static uint16_t lastFlushTime = 0;
     if (startLoggingTime - lastFlushTime > 1000) {
         lastFlushTime = startLoggingTime;
@@ -121,10 +100,7 @@ void loop()
     }
     lastLoggingTime = (uint16_t) millis() - startLoggingTime;
     
-    //send the data
     ResponseStatus rs = e32ttl.sendFixedMessage(0, 3, 4, &CansatData, sizeof(CansatData));
-    
-    DEBUG_PORT.println(millis() - startup_time);
   }
 }
 
@@ -154,5 +130,4 @@ void initSD()
 
   DEBUG_PORT.print( F("Writing to ") ); 
   DEBUG_PORT.println(filename);
-  delay(100);
 }
