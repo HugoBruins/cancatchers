@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////////////////////////////////
-// Program to only test BMP 280
+// Program to only test BMP 280 (transmission time ~298 ms)
 /////////////////////////////////////////////////////////////////////////////////
 
 #include <BMP280_DEV.h> 
@@ -7,6 +7,7 @@
     
 float AVERAGE_TEMPERATURE, AVERAGE_PRESSURE;
 float temperature_sample, pressure_sample;
+long last_time;
 
 BMP280_DEV bmp280;
 LoRa_E32 e32ttl(3, 5, 2, 7, 6);
@@ -17,7 +18,7 @@ struct CansatData {
   float longitude;
   int altitude;
   int temperature;
-  long pressure;
+  int pressure;
   long time;
 };
 
@@ -53,6 +54,7 @@ void setup()
 
 void loop() 
 {
+
   bmp280.getCurrentTempPres(temperature_sample, pressure_sample);
   pressure_sample *= 100;
 
@@ -63,9 +65,10 @@ void loop()
     float longitude = 4.723414;
     int altitude = (AVERAGE_TEMPERATURE / -0.0065) * ( pow(pressure_sample / AVERAGE_PRESSURE, 0.19022806) - 1 );
     int temperature = temperature_sample * 100;
-    long pressure = pressure_sample;
-    long time = millis();
+    int pressure = pressure_sample / 10;
   } CansatData;
 
   ResponseStatus rs = e32ttl.sendFixedMessage(0, 3, 4, &CansatData, sizeof(CansatData));
+  Serial.println(millis() - last_time);
+  last_time = millis();
 }
