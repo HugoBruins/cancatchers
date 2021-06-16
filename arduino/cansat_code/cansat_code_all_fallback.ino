@@ -1,9 +1,10 @@
 /////////////////////////////////////////////////////////////////////////////////
-// BMP + GPS + Transmission + SD card
+// BMP + GPS + Transmission + SD card.
 // 64% Dynamic memory!
-// This code will still work without a connected GPS module
-// But will also send GPS if the GPS is connected properly
-// Just in case something disconnects at launch
+// This code will still work without a connected GPS module.
+// But will also send GPS if the GPS is connected properly.
+// Just in case something disconnects at launch.
+// The module also transmits slightly faster in this case, because no 2x 4 byte floats are send. 
 /////////////////////////////////////////////////////////////////////////////////
 #include <NMEAGPS.h>
 #include <BMP280_DEV.h> 
@@ -29,14 +30,6 @@ SdCard card;
 Fat16 file;
 gps_fix  fix;
 
-struct CansatData {
-  uint8_t sats = 13;
-  float latitude;
-  float longitude;
-  int altitude;
-  uint16_t temperature;
-  uint16_t pressure;
-};
 
 void setup() 
 {
@@ -44,8 +37,6 @@ void setup()
   e32ttl.begin();
   gpsPort.begin(9600);
 
-  
-  
   delay(100);
   
   if (!bmp280.begin(0x76)) {
@@ -81,22 +72,23 @@ void setup()
     name[7] = i % 10 + '0';
     if (file.open(name, O_CREAT | O_EXCL | O_WRITE))break;
   }
-  
   delay(200);
 }
 
 void loop()
 {
+  // if gps_error = false, i.e. after startup. 
   if (!gps_error) {
-    //this is a loop that goes every 3 seconds
-    //if the gps works, it should keep gps_error false
-    //if nothing is received in 5 seconds, it will turn gps_error true
+    // this is a loop that goes every 3 seconds
+    // if the gps works, it should keep gps_error false
+    // if nothing was received in 5 seconds, it will turn gps_error true
     uint32_t current_gps_check_time = millis();
     if (current_gps_check_time - previous_gps_check_time >= 3000) {
       previous_gps_check_time = current_gps_check_time;
       check_gps();
     }
     
+    // The general gps loop as we know it.
     while (gps.available( gpsPort )) {
       fix = gps.read();
       last_rx = millis();
@@ -104,7 +96,6 @@ void loop()
       bmp280.getCurrentTempPres(temperature_sample, pressure_sample);
       pressure_sample *= 100;
   
-      
       struct CansatData {
         uint8_t sats = fix.satellites;
         float latitude = fix.latitude();
@@ -113,8 +104,6 @@ void loop()
         uint16_t temperature = temperature_sample * 100;
         uint16_t pressure = pressure_sample / 10;
       } CansatData;
-  
-      
   
       ResponseStatus rs = e32ttl.sendFixedMessage(0, 3, 4, &CansatData, sizeof(CansatData));
   
@@ -130,15 +119,14 @@ void loop()
       DEBUG_PORT.println(F("hallo"));
     } 
   }
+  //if the GPS module disconnected
   else {
     bmp280.getCurrentTempPres(temperature_sample, pressure_sample);
     pressure_sample *= 100;
 
-    //we can see on the receiver module that the gps is not working by receiving 99,243,243
+    //we can see on the receiver module that the gps is not working by receiving 99
     struct CansatData {
       uint8_t sats = 99;
-      uint8_t latitude = 99;
-      uint8_t longitude = 99;
       int16_t altitude = (AVERAGE_TEMPERATURE / -0.0065) * ( pow(pressure_sample / AVERAGE_PRESSURE, 0.19022806) - 1 );
       uint16_t temperature = temperature_sample * 100;
       uint16_t pressure = pressure_sample / 10;
@@ -147,8 +135,6 @@ void loop()
     ResponseStatus rs = e32ttl.sendFixedMessage(0, 3, 4, &CansatData, sizeof(CansatData));
 
     file.print(CansatData.sats); file.print(F(","));
-    file.print(CansatData.latitude, 6); file.print(F(","));
-    file.print(CansatData.longitude, 6); file.print(F(","));
     file.print(CansatData.altitude); file.print(F(","));
     file.print(CansatData.temperature); file.print(F(","));
     file.print(CansatData.pressure); file.print(F(","));
@@ -166,6 +152,4 @@ static void check_gps()
     DEBUG_PORT.println(F("GPS is not connected / working"));
     gps_error = true;
   }
-  
 }
-
