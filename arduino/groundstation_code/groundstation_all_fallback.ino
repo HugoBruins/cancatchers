@@ -43,8 +43,8 @@ void setup() {
 }
 
 void loop() {
-
-  if (gps_error == false) {
+  if (!gps_error) {
+    
     struct DATA {
         uint8_t sats;
         float latitude;
@@ -55,11 +55,13 @@ void loop() {
       };
     DATA cansat_data;
     if (ESerial.available()) {
+      
       Transceiver.GetStruct(&cansat_data, sizeof(cansat_data));
-      if ( isnan(cansat_data.sats) or isnan(cansat_data.latitude) or isnan(cansat_data.longitude) or isnan(cansat_data.altitude) or isnan(cansat_data.temperature) or isnan(cansat_data.pressure)) {
+
+      if (isnan(cansat_data.latitude) || isnan(cansat_data.longitude) || cansat_data.sats > 30) {
         gps_error = true;
-      if (gps_error = false) {
-        Serial.print("noerror");
+      }
+      if (gps_error == false) {
         Serial.print(cansat_data.sats); Serial.print(F(","));
         Serial.print(cansat_data.latitude, 6); Serial.print(F(","));
         Serial.print(cansat_data.longitude, 6); Serial.print(F(","));
@@ -71,19 +73,21 @@ void loop() {
         previous_time = millis();
       }
     }
-   else if (gps_error == true) {
-      struct DATA {
-        uint8_t sats;
-        int16_t altitude;
-        uint16_t temperature;
-        uint16_t pressure;
-      };
-      DATA cansat_data_error;
-      if ( isnan(cansat_data_error.sats) or isnan(cansat_data_error.altitude) or isnan(cansat_data_error.temperature) or isnan(cansat_data_error.pressure)) {
+  }
+  if (gps_error) {
+    struct DATA {
+      uint8_t sats;
+      int16_t altitude;
+      uint16_t temperature;
+      uint16_t pressure;
+    };
+    DATA cansat_data_error;
+    if (ESerial.available()) {
+      Transceiver.GetStruct(&cansat_data_error, sizeof(cansat_data_error));
+      if ( isnan(cansat_data_error.sats) || isnan(cansat_data_error.altitude) || isnan(cansat_data_error.temperature) || isnan(cansat_data_error.pressure)) {
         gps_error = false;
       }
-      if (gps_error = true) {
-        Serial.print("error");
+      if (gps_error == true) {
         Serial.print(cansat_data_error.sats); Serial.print(F(","));
         Serial.print(cansat_data_error.altitude); Serial.print(F(","));
         Serial.print(float(cansat_data_error.temperature) / 100); Serial.print(F(","));
@@ -92,17 +96,9 @@ void loop() {
         Serial.println(millis() - previous_time);
         previous_time = millis();
       }
-    
-   }
-
-      
-      if (cansat_data.sats == 99) {
-        gps_error = true;
-      }
-
-      //the commas are there so they are easily splitted using python
-      // Serial.print(cansat_data.sats); Serial.print(F(","));
-      
-      }
     }
   }
+}
+      //the commas are there so they are easily splitted using python
+      // Serial.print(cansat_data.sats); Serial.print(F(","));
+  
