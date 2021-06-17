@@ -13,3 +13,13 @@ It does this again no matter if the gps module failed or not but this one also h
 ![Figure_1](https://user-images.githubusercontent.com/25268098/122452031-17c2d800-cfa9-11eb-8f52-7aad126e3314.png)
 
 Notice how these figures are the same. 
+
+# Instructions: 
+
+1. Let [live_monitoring.py]( https://github.com/HugoBruins/cancatchers/tree/master/python/live_monitoring "live_monitoring") generate a data file.
+2. Put this file in the same file as the code (codeforplotting2.py)
+3. If you have any gps data, generate a map.png as told in these [instructions](https://github.com/HugoBruins/cancatchers/tree/master/python/Plot%20everything#how-can-i-get-my-own-map-image "instructions"). Drop the map.png in the same file as the code and your text file.
+4. Edit codeforplotting2.py using whatever IDE you use, and change 
+   > data_file_name = '28receiver_data.txt'
+   to whatever your text file is called, if you didn't change anything from the monitoring code this should only be a number
+5. Run the code and profit
