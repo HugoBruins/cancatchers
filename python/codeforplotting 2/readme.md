@@ -1,4 +1,4 @@
-## information
+# Information
 
 This code can plot the data that is generated from [live_monitoring.py]( https://github.com/HugoBruins/cancatchers/tree/master/python/live_monitoring "live_monitoring").
 
