@@ -1,106 +1,130 @@
+# this code opens the ground station port and reads from the Arduino
+# after that it will proceed to write this data to a file
+# and if all goes well I can make it plot the data at the end
+
+import serial
+import serial.tools.list_ports
+import time
+import sys
+import glob
+import string
+
+# imports for plotting
+
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
-import pandas as pd
-import numpy as np
 
-#change this if necessary!
-seperation_mark = ' '       #say you use commas between each send variable, you would make this ','
-data_file_name = 'your_cansat_data.txt'
+#change as preferred
 
-#gets data
-df = pd.read_csv(data_file_name, sep= seperation_mark, header=None)
-df.columns = ["sats", "latitude", "longitude", "altitude", "temperature", "pressure", "time"]
-map_img = plt.imread('map.png')
+text_file_name = "receiver_data"
+receiver_baudrate = 115200
 
-#turns everything in superior numpy arrays for manipulation
-array_long = np.array(df.longitude.tolist())
-array_lat = np.array(df.latitude.tolist())
-plot_alt = np.array(df.altitude.tolist())
-plot_3d_alt = np.array(df.altitude.tolist())
+# this beautiful piece of code gets the active port, i.e. Arduino port
+# if it's connected via usb obviously
+ports =  serial.tools.list_ports.comports()
+for port in ports:
+    port = str(port)
+    port = port.split(' - ')
+    serial_port = port[0]
+    print(serial_port)
 
-#getting the boundaries for the 2dimensional map
-boundary_box = ((np.min(array_long[np.nonzero(array_long)]),   df.longitude.max(),      
-          np.min(array_lat[np.nonzero(array_lat)]), df.latitude.max()))
+ser = serial.Serial(serial_port, baudrate = 115200)
+satellite_list = []
+latitude_list = []
+longitude_list = []
+altitude_list = []
+temperature_list = []
+pressure_list = []
+time_list = []
 
-#printing it so we can create a map image based on extreme values
-print()
-print(boundary_box)
+# this part of the code creates a new text file
 
-#removing values below zero altitude (sensor noise) and turning gpslatlong values to None type if there is no fix for the 3d map. 
-for counter, longitude in enumerate(array_long):
-    if plot_3d_alt[counter] <= 0:
-        plot_3d_alt[counter] = 0
-        plot_alt[counter] = 0
-    if longitude == 0:
-        array_long[counter] = None
-        array_lat[counter] = None
-        plot_3d_alt[counter] = None
+class DelLetters:
+    def __init__(self, keep=string.digits):
+        self.comp = dict((ord(c), c) for c in keep)
+    def __getitem__(self, k):
+        return self.comp.get(k)
+DD = DelLetters()
 
-#this is for calculating wind speed
-radius_earth = 6373000.0 #radius earth
-wind_speed = []
-for counter, i in enumerate(df.latitude):
-    try: 
-        lat1 = np.radians(df.latitude[counter])
-        lat2 = np.radians(df.latitude[counter+1])
-        lon1 = np.radians(df.longitude[counter])
-        lon2 = np.radians(df.longitude[counter+1])
+numbers = []
+file = None
+text_files = glob.glob("*.txt")
+
+if text_files == []:
+        text_file_name = text_file_name + '.txt'
+        file = open(text_file_name, "w+")
+else:
+    for text_file in text_files:
+        number = text_file.translate(DD)
+        if number != '':
+            numbers.append(int(number))
+        else:
+            numbers.append(0)
+
+if file == None:
+    text_file_number = max(numbers)
+    text_file_name = str(text_file_number + 1) + text_file_name +  '.txt'
+    file = open(text_file_name, "w+")
+
+
+print("writing to file: ", text_file_name)
+
+start_time = time.time()
+while True:
+    try:
+        data = ser.readline()[:-2].decode('utf-8')
+        data_list = data.split(',')
         
-        dlat = lat2 - lat1
-        dlon = lon2 - lon1
-        a = np.sin(dlat / 2) ** 2 + np.cos( lat1 ) * np.cos( lat2 ) * np.sin( dlon / 2 )**2
-        c = 2 * np.arctan2(np.sqrt(a), np.sqrt(1 - a))
-        distance = radius_earth * c
-        
-        time_difference = ( df.time[counter+1] - df.time[counter] ) / 1000
+        #some filtering for garbage data, i.e. if the received struct is wrong
+        if 'ovf' not in data_list:
+            
+            # if the gps is not working, some adjustments need to be made
+            if len(data_list) == 6:
+                data = data[2:]
+                data = "99,0,0" + data
+                print(data)
+            file.write(data + "\n")
+            data_list = data.split(',')
+            
+            if len(data_list) == 8:
+                # if the amount of satellites is 99, the cansat is running
+                # in fallback mode. 
+                if data_list[0] != '99':
+                    satellite_list.append(int(data_list[0]))
+                else:
+                    satellite_list.append(0)
+                    
+                latitude_list.append(float(data_list[1]))
+                longitude_list.append(float(data_list[2]))
+                altitude_list.append(int(data_list[3]))
+                temperature_list.append(float(data_list[4]))
+                pressure_list.append(float(data_list[5]))
+                time_list.append(time.time() - start_time)
+            
     except:
-        True
-    if distance > 10:
-        distance = 0;
-    
-    wind_speed.append(distance / time_difference)
-
-#for turning the milliseconds into seconds
-timelist = []
-for i in df.time.tolist():
-    timeval = i / 1000
-    timelist.append(timeval)
-
-#for plotting temperature, pressure and wind speed
-fig, ax = plt.subplots(4)
-ax[0].plot(timelist, df.temperature, color = 'red')
-ax[0].set_xlabel('time (s)')
-ax[0].set_ylabel('temperature (℃)')
-ax[0].grid()
-ax[1].plot(timelist, df.pressure, color = 'orange')
-ax[1].set_xlabel('time (s)')
-ax[1].set_ylabel('pressure (Pa)')
-ax[1].grid()
-ax[2].plot(timelist, wind_speed, color = 'purple')
-ax[2].set_xlabel('time (s)')
-ax[2].set_ylabel('wind / horizontal speed (m/s)')
-ax[2].grid()
-ax[3].plot(timelist, plot_alt, color = 'red')
-ax[3].set_xlabel('time (s)')
-ax[3].set_ylabel('altitude (m)')
-ax[3].grid()
-
-#for plotting  2d map
-fig,ax = plt.subplots(figsize = (8,7))
-color_map = plt.cm.get_cmap('hot')
-im = ax.scatter(array_long, array_lat, cmap=color_map, zorder=1, alpha= 1, c=plot_3d_alt, s=10)
-fig.colorbar(im, ax=ax, label = "altitude (m)")
-ax.set_xlim(boundary_box[0],boundary_box[1])
-ax.set_ylim(boundary_box[2],boundary_box[3])
-ax.set_xlabel('longitude')
-ax.set_ylabel('latitude')
-ax.imshow(map_img, zorder=0, extent = boundary_box, aspect= 'equal')  
-
-#for plotting the 3d map
-fig = plt.figure()
-ax = Axes3D(fig)
-ax.set_xlabel('longitude')
-ax.set_ylabel('latitude')
-ax.set_zlabel('altitude (m)')
-plt.plot(array_long,array_lat,plot_3d_alt, color = 'hotpink')
-plt.show()
+        error = sys.exc_info()[0]
+        print(error)
+        print("The data was written to: ", text_file_name)
+        ser.close()
+        file.close()
+        
+        # this will plot all the data afterward, the text file is still made
+        # however, so replotting is always possible. 
+        
+        fig, ax = plt.subplots(4)
+        ax[0].plot(time_list, temperature_list, color = 'red')
+        ax[0].set_xlabel('time (s)')
+        ax[0].set_ylabel('temperature (℃)')
+        ax[0].grid()
+        ax[1].plot(time_list, pressure_list, color = 'orange')
+        ax[1].set_xlabel('time (s)')
+        ax[1].set_ylabel('pressure (Pa)')
+        ax[1].grid()
+        # ax[2].plot(timelist, wind_speed, color = 'purple')
+        # ax[2].set_xlabel('time (s)')
+        # ax[2].set_ylabel('wind / horizontal speed (m/s)')
+        # ax[2].grid()
+        ax[3].plot(time_list, altitude_list, color = 'red')
+        ax[3].set_xlabel('time (s)')
+        ax[3].set_ylabel('altitude (m)')
+        ax[3].grid()
+        break
