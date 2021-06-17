@@ -12,4 +12,4 @@ The code is working for the latest groundstation_all_fallback, where it can stil
 
 Notice how there are 2 peaks: Those are my fingers on the temperature sensor just to check if there was much delay between the monitored information, and it was almost 0. 
 
-The text file generated next to this picture is in the same directory called 28receiver_data.txt. 
+The text file generated next to this picture is in the same directory called 28receiver_data.txt.
