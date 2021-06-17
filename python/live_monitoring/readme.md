@@ -11,3 +11,5 @@ The code is working for the latest groundstation_all_fallback, where it can stil
 ![Figure_1](https://user-images.githubusercontent.com/25268098/122445812-35407380-cfa2-11eb-8ee4-9ee0942ef341.png)
 
 Notice how there are 2 peaks: Those are my fingers on the temperature sensor just to check if there was much delay between the monitored information, and it was almost 0. 
+
+The text file generated next to this picture is in the same directory called 28receiver_data.txt. 
