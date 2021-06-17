@@ -23,7 +23,7 @@ for port in ports:
     print(serial_port)
 
 ser = serial.Serial(serial_port, baudrate = 115200)
-start_time = time.time() # time in seconds
+start_time = time.time() # time in milliseconds
 
 satellite_list = []
 latitude_list = []
@@ -33,7 +33,7 @@ temperature_list = []
 altitude_list = []
 
 # this part of the code creates a new text file
-text_files = glob.glob("*.txt")
+
 class DelLetters:
     def __init__(self, keep=string.digits):
         self.comp = dict((ord(c), c) for c in keep)
@@ -41,36 +41,47 @@ class DelLetters:
         return self.comp.get(k)
 DD = DelLetters()
 
-try:
-    last_text_file = text_files[-1]
-    text_file_number = last_text_file.translate(DD)
-    if text_file_number == '':
-        text_file_number = 0
-    text_file_number = int(text_file_number)
-    text_file_name = text_file_name + str(text_file_number + 1) + '.txt'
-    file = open(text_file_name, "w+")
-    file.write("Hallo")
-    file.close()
-except: 
-    file = open(text_file_name + '.txt', "w+")
-    file.write("Hallo")
+numbers = []
+file = None
+text_files = glob.glob("*.txt")
 
+if text_files == []:
+        print("allo")
+        text_file_name = text_file_name + '.txt'
+        file = open(text_file_name, "w+")
+else:
+    for text_file in text_files:
+        number = text_file.translate(DD)
+        if number != '':
+            numbers.append(int(number))
+        else:
+            numbers.append(0)
+
+if file == None:
+    text_file_number = max(numbers)
+    text_file_name = str(text_file_number + 1) + text_file_name +  '.txt'
+    file = open(text_file_name, "w+")
+
+
+print("writing to file: ", text_file_name)
 
 while True:
     try:
         data = ser.readline()[:-2].decode('utf-8')
         data_list = data.split(',')
-        if len(data_list) == 8:
-            print(data)
-        elif len(data_list) == 6:
-            data_list.pop(0)
-            print(data)
-            
         
+        if 'ovf' not in data_list:
+            file.write(data + "\n")
+            if len(data_list) == 8:
+                print(data_list)
+            elif len(data_list) == 6:
+                print(data_list)
+            
         millis = time.time() - start_time
     except:
         error = sys.exc_info()[0]
         print(error)
         ser.close()
+        file.close()
         break
         
