@@ -1,8 +1,8 @@
-## information
+## Information
 
 This piece of code is amazing! You plop in your ground station usb-port, start up the code, start the cansat and this will log all the received data into a text file, while also plotting the data afterward. I am planning on making some adjustments so you can see the current distance between the Cansat, this will be fun for a distance test. 
 
-## picture
+## Picture
 
 (GPS is not working, but here is a sample of how the afterward plot would look (temperature is really high, attic life is hard).
 
