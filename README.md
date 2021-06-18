@@ -9,12 +9,13 @@ Cansat is a competition where you have to design a little satellite that will go
 ## Parts used for our Cansat
 
 - Arduino Nano microcontroller.
-- Adafruit bmp 280 temperature and pressure sensor.
-- U-blox neo-7m gps module.
+- BMP 280 breakout temperature and pressure sensor.
+- ATGM336H gps module.
 - A cheap micro sd card reader.
 - Ebyte SX1278 100mW E32-433T20DT UART LoRa transceiver.
 - A 2dBi SMA omnidirectional 433MHz antenna.
 - A buck-converter set to ±3.3V.
+- A bidirectional 2 channel logic converter 5v <-> 3.3v
 - 2x 3.7V LiPo single cel batteries in parallel.
 - A master switch between batteries and all the parts
 - A 3d printed inner and outer case.
