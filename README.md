@@ -22,7 +22,7 @@ Cansat is a competition where you have to design a little satellite that will go
 
 ## Wiring Cansat
 
-![image](https://user-images.githubusercontent.com/25268098/122579622-5f9f3900-d055-11eb-8cfe-82c8ba8206b7.png)
+![image](https://user-images.githubusercontent.com/25268098/122579875-a55c0180-d055-11eb-9f61-4b84f5634c83.png)
 
 Made with EasyEDA
 
