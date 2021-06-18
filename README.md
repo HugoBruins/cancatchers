@@ -20,6 +20,10 @@ Cansat is a competition where you have to design a little satellite that will go
 - A 3d printed inner and outer case.
 - A parachute made from neon pink 100% polyester.
 
+## Wiring Cansat
+
+![image](https://user-images.githubusercontent.com/25268098/122575153-bbb38e80-d050-11eb-9efe-b507a159a2c9.png)
+
 ## Parts used for our groundstation
 
 - Arduino Uno microcontroller.
