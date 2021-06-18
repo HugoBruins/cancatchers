@@ -16,7 +16,7 @@ Cansat is a competition where you have to design a little satellite that will go
 - A 2dBi SMA omnidirectional 433MHz antenna.
 - A buck-converter set to ±3.3V.
 - A bidirectional 2 channel logic converter 5v <-> 3.3v
-- 2x 3.7V LiPo single cel batteries in parallel.
+- 2x 3.7V LiPo single cel 650mAh batteries in parallel.
 - A master switch between batteries and all the parts
 - A 3d printed inner and outer case.
 - A parachute made from neon pink 100% polyester.
