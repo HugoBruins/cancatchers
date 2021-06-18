@@ -6,8 +6,8 @@ import serial
 import serial.tools.list_ports
 import time
 import sys
-import glob
-import string
+import os
+import datetime
 
 # imports for plotting
 
@@ -38,35 +38,16 @@ time_list = []
 
 # this part of the code creates a new text file
 
-class DelLetters:
-    def __init__(self, keep=string.digits):
-        self.comp = dict((ord(c), c) for c in keep)
-    def __getitem__(self, k):
-        return self.comp.get(k)
-DD = DelLetters()
+def create_file_name(wanted_folder_name, wanted_text_name):
+    folder_name = wanted_folder_name + " " + str(datetime.datetime.now())[:-7]
+    folder_name = folder_name.replace(":", ".")
+    os.makedirs(folder_name)
+    path = os.path.join(os.getcwd(), folder_name)
+    file = open(os.path.join(path, wanted_text_name + '.txt'), "w+")
+    return file
 
-numbers = []
-file = None
-text_files = glob.glob("*.txt")
-
-if text_files == []:
-        text_file_name = text_file_name + '.txt'
-        file = open(text_file_name, "w+")
-else:
-    for text_file in text_files:
-        number = text_file.translate(DD)
-        if number != '':
-            numbers.append(int(number))
-        else:
-            numbers.append(0)
-
-if file == None:
-    text_file_number = max(numbers)
-    text_file_name = str(text_file_number + 1) + text_file_name +  '.txt'
-    file = open(text_file_name, "w+")
-
-
-print("writing to file: ", text_file_name)
+file = create_file_name("data", "receiver_data")
+print("writing to file: ", file.name)
 
 start_time = time.time()
 while True:
