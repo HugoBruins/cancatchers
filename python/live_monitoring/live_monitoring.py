@@ -8,15 +8,13 @@ import time
 import sys
 import os
 import datetime
-
-# imports for plotting
-
 import matplotlib.pyplot as plt
 
 #change as preferred
 
 text_file_name = "receiver_data"
 receiver_baudrate = 115200
+plot_1_name = "temperature pressure windspeed altitude"
 
 # this beautiful piece of code gets the active port, i.e. Arduino port
 # if it's connected via usb obviously
@@ -28,13 +26,8 @@ for port in ports:
     print(serial_port)
 
 ser = serial.Serial(serial_port, baudrate = 115200)
-satellite_list = []
-latitude_list = []
-longitude_list = []
-altitude_list = []
-temperature_list = []
-pressure_list = []
-time_list = []
+satellite_list,latitude_list,longitude_list = [], [], []
+altitude_list, temperature_list, pressure_list, time_list = [], [], [], []
 
 # this part of the code creates a new text file
 
@@ -44,9 +37,9 @@ def create_file_name(wanted_folder_name, wanted_text_name):
     os.makedirs(folder_name)
     path = os.path.join(os.getcwd(), folder_name)
     file = open(os.path.join(path, wanted_text_name + '.txt'), "w+")
-    return file
+    return file, path
 
-file = create_file_name("data", "receiver_data")
+file, path = create_file_name("data", "receiver_data")
 print("writing to file: ", file.name)
 
 start_time = time.time()
@@ -90,8 +83,8 @@ while True:
         
         # this will plot all the data afterward, the text file is still made
         # however, so replotting is always possible. 
-        
-        fig, ax = plt.subplots(4)
+        plt.close('all')
+        fig, ax = plt.subplots(4, figsize=(16,9))
         ax[0].plot(time_list, temperature_list, color = 'red')
         ax[0].set_xlabel('time (s)')
         ax[0].set_ylabel('temperature (℃)')
@@ -108,4 +101,6 @@ while True:
         ax[3].set_xlabel('time (s)')
         ax[3].set_ylabel('altitude (m)')
         ax[3].grid()
+        plt.tight_layout()
+        fig.savefig(os.path.join(path, plot_1_name + '.png'), dpi = 185, pad_inches = 10)
         break
