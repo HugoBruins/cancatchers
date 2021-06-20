@@ -10,8 +10,31 @@ import os
 import datetime
 import matplotlib.pyplot as plt
 
-#change as preferred
+def make_plot():
+    # this will plot all the data afterward, the text file is still made
+    # however, so replotting is always possible. 
+    plt.close('all')
+    fig, ax = plt.subplots(4, figsize=(16,9))
+    ax[0].plot(time_list, temperature_list, color = 'red')
+    ax[0].set_xlabel('time (s)')
+    ax[0].set_ylabel('temperature (℃)')
+    ax[0].grid()
+    ax[1].plot(time_list, pressure_list, color = 'orange')
+    ax[1].set_xlabel('time (s)')
+    ax[1].set_ylabel('pressure (Pa)')
+    ax[1].grid()
+    # ax[2].plot(timelist, wind_speed, color = 'purple')
+    # ax[2].set_xlabel('time (s)')
+    # ax[2].set_ylabel('wind / horizontal speed (m/s)')
+    # ax[2].grid()
+    ax[3].plot(time_list, altitude_list, color = 'red')
+    ax[3].set_xlabel('time (s)')
+    ax[3].set_ylabel('altitude (m)')
+    ax[3].grid()
+    plt.tight_layout()
+    fig.savefig(os.path.join(path, plot_1_name + '.png'), dpi = 185, pad_inches = 10)
 
+#change as preferred
 text_file_name = "receiver_data"
 receiver_baudrate = 115200
 plot_1_name = "temperature pressure windspeed altitude"
@@ -50,7 +73,6 @@ while True:
         
         #some filtering for garbage data, i.e. if the received struct is wrong
         if 'ovf' not in data_list:
-            
             # if the gps is not working, some adjustments need to be made
             if len(data_list) == 6:
                 data = data[2:]
@@ -58,49 +80,34 @@ while True:
                 print(data)
             file.write(data + "\n")
             data_list = data.split(',')
-            
             if len(data_list) == 8:
                 # if the amount of satellites is 99, the cansat is running
                 # in fallback mode. 
                 if data_list[0] != '99':
-                    satellite_list.append(int(data_list[0]))
+                    satellites = int(data_list[0])
                 else:
                     satellite_list.append(0)
-                    
-                latitude_list.append(float(data_list[1]))
-                longitude_list.append(float(data_list[2]))
-                altitude_list.append(int(data_list[3]))
-                temperature_list.append(float(data_list[4]))
-                pressure_list.append(float(data_list[5]))
-                time_list.append(time.time() - start_time)
-            
+                
+                
+                latitude = float(data_list[1])
+                longitude = float(data_list[2])
+                altitude = float(data_list[3])
+                temperature = float(data_list[4])
+                pressure = float(data_list[5])
+                current_time = time.time() - start_time
+                
+                latitude_list.append(latitude)
+                longitude_list.append(longitude)
+                altitude_list.append(altitude)
+                temperature_list.append(temperature)
+                pressure_list.append(pressure)
+                time_list.append(current_time)                        
+        
     except:
         error = sys.exc_info()[0]
         print(error)
         print("The data was written to: ", text_file_name)
         ser.close()
         file.close()
-        
-        # this will plot all the data afterward, the text file is still made
-        # however, so replotting is always possible. 
-        plt.close('all')
-        fig, ax = plt.subplots(4, figsize=(16,9))
-        ax[0].plot(time_list, temperature_list, color = 'red')
-        ax[0].set_xlabel('time (s)')
-        ax[0].set_ylabel('temperature (℃)')
-        ax[0].grid()
-        ax[1].plot(time_list, pressure_list, color = 'orange')
-        ax[1].set_xlabel('time (s)')
-        ax[1].set_ylabel('pressure (Pa)')
-        ax[1].grid()
-        # ax[2].plot(timelist, wind_speed, color = 'purple')
-        # ax[2].set_xlabel('time (s)')
-        # ax[2].set_ylabel('wind / horizontal speed (m/s)')
-        # ax[2].grid()
-        ax[3].plot(time_list, altitude_list, color = 'red')
-        ax[3].set_xlabel('time (s)')
-        ax[3].set_ylabel('altitude (m)')
-        ax[3].grid()
-        plt.tight_layout()
-        fig.savefig(os.path.join(path, plot_1_name + '.png'), dpi = 185, pad_inches = 10)
+        make_plot()
         break
