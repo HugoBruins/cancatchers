@@ -14,12 +14,18 @@ Cansat is a competition where you have to design a little satellite that will go
 - A cheap micro sd card reader.
 - Ebyte SX1278 100mW E32-433T20DT UART LoRa transceiver.
 - A 2dBi SMA omnidirectional 433MHz antenna.
-- A buck-converter set to ±3.3V. (This is required because the 3.3V pin on the Arduino cannot handle the amount of current.)
-- A bidirectional 2 channel logic converter 5v <-> 3.3v (IO from GPS cannot handle 5V).
+- A buck-converter set to ±3.3V. 
+- A bidirectional 2 channel logic converter 5v <-> 3.3v 
 - 2x 3.7V LiPo single cel 650mAh batteries in parallel.
 - A master switch between batteries and all the parts
 - A 3d printed inner and outer case.
 - A parachute made from neon pink 100% polyester.
+
+We had to use a buck converter to convert the 5V out from the Arduino to 3.3V, we figured out the hard way that driving all the required current from the 3.3V pin fries the 5V Arduino Nano usb-port. We also need the bidrectional logic converter because the GPS cannot handle 5V on the IO and the 5v Arduino has 5V TX and RX.
+
+The BMP280 is still on the +3.3V rail on the Arduino because it becomes less accurate on the buck-converter. 
+
+We opted for a LoRa module, because the stock transmitter was a damaged module, this LoRa module has enough link budget to reach the kármán line in perfect/ideal circumstances using our setup.
 
 ## Wiring Cansat
 
