@@ -21,11 +21,15 @@ Cansat is a competition where you have to design a little satellite that will go
 - A 3d printed inner and outer case.
 - A parachute made from neon pink 100% polyester.
 
-We had to use a buck converter to convert the 5V out from the Arduino to 3.3V, we figured out the hard way that driving all the required current from the 3.3V pin fries the 5V Arduino Nano usb-port. We also need the bidrectional logic converter because the GPS cannot handle 5V on the IO and the 5v Arduino has 5V TX and RX.
+We had to use a buck converter to convert the 5V out from the Arduino to 3.3V, we figured out the hard way that driving all the required current from the 3.3V pin fries the 5V Arduino Nano usb-port. The GPS TX is only connected to the RX because the GPS I/O is not 3.3V compatible, plus we only need to receive the data from it, if we want to send data to it (change settings) we just need to desolder it and use a USB - TLL converter, but changing settings is not done often. The settigs we are rocking (configured using GnssToolkit3 program): 
+
+- baud rate = 115200
+- frequency = 2hz
+- GPS constellations: GPS (USA), GLONASS (Russia), BDS (China)
 
 The BMP280 is still on the +3.3V rail on the Arduino because it becomes less accurate on the buck-converter. 
 
-We opted for a LoRa module, because the stock transmitter was a damaged module, this LoRa module has enough link budget to reach the kármán line in perfect/ideal circumstances using our setup.
+We opted for a LoRa module, because the stock transmitter was a damaged module, this LoRa module has enough link budget to reach the kármán line in perfect/ideal circumstances using our setup. In a distance test we got 2 kilometers easily (almost no packet loss) with lots of stuff inside of the fresnel zone (also with the receiver inside a car). 
 
 ## Wiring Cansat
 
