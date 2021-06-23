@@ -29,7 +29,7 @@ We opted for a LoRa module, because the stock transmitter was a damaged module, 
 
 ## Wiring Cansat
 
-![image](https://user-images.githubusercontent.com/25268098/122787959-244f7500-d2b6-11eb-8cbb-a8cf2479c12b.png)
+![image](https://user-images.githubusercontent.com/25268098/123161273-830c1e80-d46f-11eb-8ae1-b246030e04e4.png)
 
 Made with EasyEDA
 
