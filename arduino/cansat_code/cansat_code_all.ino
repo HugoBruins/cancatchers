@@ -3,11 +3,11 @@
 // 63% Dynamic memory! 💪
 /////////////////////////////////////////////////////////////////////////////////
 #include <NMEAGPS.h>
-#include <BMP280_DEV.h> 
+#include <BMP280_DEV.h>
 #include <LoRa_E32.h>
 #include <GPSport.h>
 #include <Fat16.h>
-    
+
 float AVERAGE_TEMPERATURE, AVERAGE_PRESSURE;
 float temperature_sample, pressure_sample;
 long last_time;
@@ -30,15 +30,13 @@ struct CansatData {
   uint16_t pressure;
 };
 
-void setup() 
+void setup()
 {
   DEBUG_PORT.begin(115200);
   e32ttl.begin();
   gpsPort.begin(115200);
-  DEBUG_PORT.println("please double check baud rate for GPS");
   delay(100);
-  
-    
+
   if (!bmp280.begin(0x76)) {
     DEBUG_PORT.println(F("BMP280 failed"));
   }
@@ -56,7 +54,7 @@ void setup()
   }
   AVERAGE_PRESSURE = AVERAGE_PRESSURE / 500;
   AVERAGE_TEMPERATURE = AVERAGE_TEMPERATURE / 500;
-  
+
   DEBUG_PORT.print(F("Average pressure and temperature: "));
   DEBUG_PORT.print(AVERAGE_PRESSURE); DEBUG_PORT.print(F(","));
   DEBUG_PORT.print(AVERAGE_TEMPERATURE);
@@ -72,26 +70,28 @@ void setup()
     name[7] = i % 10 + '0';
     if (file.open(name, O_CREAT | O_EXCL | O_WRITE))break;
   }
-  
+
   delay(200);
 }
 
-void loop() 
+void loop()
 {
   while (gps.available( gpsPort )) {
+    DEBUG_PORT.print("check1");
     fix = gps.read();
-    
+    DEBUG_PORT.print("check2");
+
     bmp280.getCurrentTempPres(temperature_sample, pressure_sample);
     pressure_sample *= 100;
 
-    
+
     struct CansatData {
-      int sats = fix.satellites;
+      uint16_t sats = fix.satellites;
       float latitude = fix.latitude();
       float longitude = fix.longitude();
-      int altitude = (AVERAGE_TEMPERATURE / -0.0065) * ( pow(pressure_sample / AVERAGE_PRESSURE, 0.19022806) - 1 );
-      int temperature = temperature_sample * 100;
-      int pressure = pressure_sample / 10;
+      uint16_t altitude = (AVERAGE_TEMPERATURE / -0.0065) * ( pow(pressure_sample / AVERAGE_PRESSURE, 0.19022806) - 1 );
+      uint16_t temperature = temperature_sample * 100;
+      uint16_t pressure = pressure_sample / 10;
     } CansatData;
 
     file.print(CansatData.sats); file.print(F(","));
