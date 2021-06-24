@@ -32,9 +32,9 @@ struct CansatData {
 
 void setup() 
 {
-  DEBUG_PORT.begin(9600);
+  DEBUG_PORT.begin(115200);
   e32ttl.begin();
-  gpsPort.begin(9600);
+  gpsPort.begin(115200);
   delay(100);
   
   if (!bmp280.begin(0x76)) {
