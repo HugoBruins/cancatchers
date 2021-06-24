@@ -35,8 +35,10 @@ void setup()
   DEBUG_PORT.begin(115200);
   e32ttl.begin();
   gpsPort.begin(115200);
+  DEBUG_PORT.println("please double check baud rate for GPS");
   delay(100);
   
+    
   if (!bmp280.begin(0x76)) {
     DEBUG_PORT.println(F("BMP280 failed"));
   }
