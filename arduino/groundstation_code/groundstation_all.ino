@@ -25,12 +25,12 @@ float previous_time = 0;
 
 // this struct is the same order as on the transmitter
 struct DATA {
-  int sats;
-  float latitude;
-  float longitude;
-  int altitude;
-  int temperature;
-  int pressure;
+    uint8_t sats;
+    float latitude;
+    float longitude;
+    int16_t altitude;
+    uint16_t temperature;
+    uint16_t pressure;
 };
 
 // these are just dummy variables, replace with your own
