@@ -15,7 +15,7 @@
 #include <EBYTE.h>
 
 #define PIN_RX 2
-#define PIN_TX 3
+#define PIN_TX 7
 #define PIN_M0 4
 #define PIN_M1 5
 #define PIN_AX 6
