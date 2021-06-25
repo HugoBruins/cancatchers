@@ -25,7 +25,7 @@ Cansat is a competition where you have to design a little satellite that will go
 
 We had to use a buck converter to convert the 5V out from the Arduino to 3.3V, we figured out the hard way that driving all the required current from the 3.3V pin fries the 5V Arduino Nano usb-port. The GPS TX is only connected to the RX because the GPS I/O is not 3.3V compatible, plus we only need to receive the data from it, if we want to send data to it (change settings) we just need to desolder it and use a USB - TLL converter, but changing settings is not done often. The settigs we are rocking (configured using GnssToolkit3 program): 
 
-- baud rate = 115200
+- baud rate = 38400
 - frequency = 2hz
 - GPS constellations: GPS (USA), GLONASS (Russia), BDS (China)
 
