@@ -33,7 +33,7 @@ The BMP280 is still on the +3.3V rail on the Arduino because it becomes less acc
 
 We opted for a LoRa module, because the stock transmitter was a damaged module, this LoRa module has enough link budget to reach the kármán line in perfect/ideal circumstances using our setup. In a distance test we got 2 kilometers easily (almost no packet loss) with lots of stuff inside of the fresnel zone (also with the receiver inside a car). 
 
-## Wiring Cansat
+## Wiring Cansat and groundstation
 
 ![image](https://user-images.githubusercontent.com/25268098/123482494-8c2ef400-d605-11eb-8bf8-ac5119fdb300.png)
 
