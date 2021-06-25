@@ -35,7 +35,7 @@ We opted for a LoRa module, because the stock transmitter was a damaged module, 
 
 ## Wiring Cansat
 
-![image](https://user-images.githubusercontent.com/25268098/123411162-704d3300-d5b0-11eb-93ca-c1ec48994e96.png)
+![image](https://user-images.githubusercontent.com/25268098/123482494-8c2ef400-d605-11eb-8bf8-ac5119fdb300.png)
 
 Made with EasyEDA
 
@@ -47,5 +47,4 @@ Made with EasyEDA
 
 ## Programs used to graph the data
 
-- CoolTermWin for writing the received data to a text file.
-- Python for reading that file and plotting the data into nice graphs.
+- We use python for everything, in the python subdirectory another readme exists that explains more.
