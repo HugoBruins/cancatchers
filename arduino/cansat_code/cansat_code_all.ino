@@ -89,7 +89,7 @@ void loop()
       uint8_t sats = fix.satellites;
       float latitude = fix.latitude();
       float longitude = fix.longitude();
-      int16_t altitude = (AVERAGE_TEMPERATURE / -0.0065) * ( pow(pressure_sample / AVERAGE_PRESSURE, 0.19022806) - 1 );
+      int16_t altitude = (AVERAGE_TEMPERATURE * -153.846) * ( pow(pressure_sample / AVERAGE_PRESSURE, 0.19022806) - 1 );
       uint16_t temperature = temperature_sample * 100;
       uint16_t pressure = pressure_sample / 10;
     } CansatData;
