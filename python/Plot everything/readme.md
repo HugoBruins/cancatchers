@@ -1,4 +1,4 @@
-### DEPRICATED
+### DEPRECATED
 
 [Codeforplotting2](https://github.com/HugoBruins/cancatchers/tree/master/python/codeforplotting%202) is used to plot all the data now.
 
