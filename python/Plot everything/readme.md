@@ -1,3 +1,7 @@
+### DEPRICATED
+
+[Codeforplotting2](https://github.com/HugoBruins/cancatchers/tree/master/python/codeforplotting%202) is used to plot all the data now.
+
 # Information
 
 The code makes 3 different plots as of now, one has all the data graphs of altitude, pressure, temperature, wind / horizontal speed. The other graph is a 2d map with all the latitude and longitude information plotted and the third graph is a 3 dimensional graph that has latitude and longitude, but also altitude information plotted, sadly I cannot get a nice image of the map for the 3d graph. 
