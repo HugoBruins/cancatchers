@@ -6,10 +6,10 @@ from mpl_toolkits.mplot3d import Axes3D
 import pandas as pd
 import numpy as np
 import os
-
+plt.close('all')
 # change this if necessary!
 seperation_mark = ','  # say you use commas between each send variable, you would make this ','
-data_file_name = '28receiver_data.txt'
+data_file_name = 'receiver_data.txt'
 
 # removes all the non-data (not containing commas) from the data file
 
@@ -23,8 +23,14 @@ with open('temporary file.txt', "w+") as newfile:
 # gets data
 df = pd.read_csv('temporary file.txt', sep=seperation_mark, header=None)
 os.remove('temporary file.txt')
-df.columns = ["sats", "latitude", "longitude", "altitude", "temperature", "pressure", "time", "timedelay"]
-map_img = plt.imread('map.png')
+df.columns = ["sats", "latitude", "longitude", "altitude", "temperature", "pressure", "timedelay"]
+#map_img = plt.imread('map.png')
+
+timelist = [0]
+for times in df.timedelay:
+    next_time = timelist[-1] + times/1000
+    timelist.append(next_time)
+timelist.pop(0)
 
 # turns everything in superior numpy arrays for manipulation
 array_long = np.array(df.longitude.tolist())
@@ -76,7 +82,7 @@ if boundary_box != None:
             c = 2 * np.arctan2(np.sqrt(a), np.sqrt(1 - a))
             distance = radius_earth * c
 
-            time_difference = (df.time[counter+1] - df.time[counter]) / 1000
+            time_difference = df.timedelay[counter]
         except:
             True
         if distance > 10:
@@ -84,14 +90,9 @@ if boundary_box != None:
 
         wind_speed.append(distance / time_difference)
 
-# for turning the milliseconds into seconds
-timelist = []
-for i in df.time.tolist():
-    timeval = i / 1000
-    timelist.append(timeval)
 
 # for plotting temperature, pressure and wind speed
-fig, ax = plt.subplots(4)
+fig, ax = plt.subplots(4, figsize=(16, 9))
 ax[0].plot(timelist, df.temperature, color='red')
 ax[0].set_xlabel('time (s)')
 ax[0].set_ylabel('temperature (℃)')
@@ -112,7 +113,7 @@ if boundary_box != None:
     ax[2].grid()
 
     # for plotting  2d map
-    fig, ax = plt.subplots(figsize=(8, 7))
+    fig, ax = plt.subplots(figsize=(16, 9))
     color_map = plt.cm.get_cmap('hot')
     im = ax.scatter(array_long, array_lat, cmap=color_map, zorder=1, alpha=1, c=plot_3d_alt, s=10)
     fig.colorbar(im, ax=ax, label="altitude (m)")
@@ -120,13 +121,15 @@ if boundary_box != None:
     ax.set_ylim(boundary_box[2], boundary_box[3])
     ax.set_xlabel('longitude')
     ax.set_ylabel('latitude')
-    ax.imshow(map_img, zorder=0, extent=boundary_box, aspect='equal')
+    ax.ticklabel_format(useOffset=False)
+    #ax.imshow(map_img, zorder=0, extent=boundary_box, aspect='equal')
 
     # for plotting the 3d map
-    fig = plt.figure()
+    fig = plt.figure(figsize=(16, 9))
     ax = Axes3D(fig)
     ax.set_xlabel('longitude')
     ax.set_ylabel('latitude')
     ax.set_zlabel('altitude (m)')
     plt.plot(array_long, array_lat, plot_3d_alt, color='hotpink')
+    ax.ticklabel_format(useOffset=False)
     plt.show()
