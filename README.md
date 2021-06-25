@@ -15,6 +15,8 @@ Cansat is a competition where you have to design a little satellite that will go
 - Ebyte SX1278 100mW E32-433T20DT UART LoRa transceiver.
 - A 2dBi SMA omnidirectional 433MHz antenna.
 - A buck-converter set to ±3.3V. 
+- A blue LED.
+- A 330Ω resistor.
 - A bidirectional 2 channel logic converter 5v <-> 3.3v 
 - 2x 3.7V LiPo single cel 650mAh batteries in parallel.
 - A master switch between batteries and all the parts
@@ -33,7 +35,7 @@ We opted for a LoRa module, because the stock transmitter was a damaged module, 
 
 ## Wiring Cansat
 
-![image](https://user-images.githubusercontent.com/25268098/123161273-830c1e80-d46f-11eb-8ae1-b246030e04e4.png)
+![image](https://user-images.githubusercontent.com/25268098/123411162-704d3300-d5b0-11eb-93ca-c1ec48994e96.png)
 
 Made with EasyEDA
 
