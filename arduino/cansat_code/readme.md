@@ -2,6 +2,8 @@
 
 Have some kind of switch or jumper between the TX pin on GPS and the RX or 0 pin on your Arduino, you need to turn this **off** every single time you upload code, and turn this switch **on** when you try the code. Otherwise you might send some random stuff to the GPS module while uploading code, which could make it stop working entirely.
 
+Code with the SD card and GPS will NOT compile if you don't comment all the lines with Serial.print or anything that does anything with serial in `\Arduino\libraries\Fat16\Fat16.cpp`. This has to do with the neoHWserial protocol used with NeoGPS.
+
 ## Library dependencies
 
 Install these before trying the code:
@@ -24,6 +26,14 @@ Please follow the following steps to get the GPS working:
 ## Stability improvements
 
 To increase stability some changes can be made in NeoGPS to decrease dynamic memory. A simple one that instantly decreases dynamic memory is in `GPSfix_cfg.h`, here you can comment all the variables that are not used, i.e. only have `#define GPS_FIX_LOCATION` and `#define GPS_FIX_SATELLITES` uncommented. This will decrease dynamic memory by about 3 to 4%.  
+
+## SD card
+
+For the SD card to work properly, it will need to be below 2gb, and it will have to be formatted to FAT16 (Windows calls this FAT). It can not be a >2gb card that has only 2gb allocated, it strictly has to be <=2gb. 
+
+## BMP280
+
+
 
 ## Extra information
 
