@@ -35,9 +35,9 @@ For the SD card to work properly, it will need to be below 2gb, and it will have
 
 In order to change the settings of the GPS module, you will need to unsolder the GPS module and connect it with a USB to TLL adapter (CH340 adapter should work) to your pc. In your PC you can use the program GNSSToolkit3 to change the settings of the GPS module. The settings that we had working perfectly were:
 
-PCAS01 baud rate = 9600 -> 38400 (115200 turns out to be unstable for correctly decoding sentences for the Arduino on battery power)
-PCAS02 update rate = 1hz -> 2hz
-PCAS04 GPS constellations: GPS (USA), GLONASS (Russia) -> GPS (USA), GLONASS (Russia), BDS (China)
+- PCAS01 baud rate = 9600 -> 38400 (115200 turns out to be unstable for correctly decoding sentences for the Arduino on battery power)
+- PCAS02 update rate = 1hz -> 2hz
+- PCAS04 GPS constellations: GPS (USA), GLONASS (Russia) -> GPS (USA), GLONASS (Russia), BDS (China)
 
 ## Extra information
 
