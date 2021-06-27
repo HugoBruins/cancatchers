@@ -6,11 +6,11 @@ Code with the SD card and GPS will NOT compile if you don't comment all the line
 
 ## Library dependencies
 
-Install these before trying the code:
+Install these libraries before trying the code:
 - neogps.h
 - neohwserial.h
 - BMP280_dev.h
-- Sdfat.h
+- Fat16.h
 - lora_32tll.h
 
 ## Getting the GPS module working
