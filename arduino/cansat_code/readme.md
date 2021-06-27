@@ -21,6 +21,10 @@ Please follow the following steps to get the GPS working:
 - Now run the `NMEAorder` example and take note of the last sentence given trough the debug_port.
 - Go to `.../libraries/neogps/src/NMEAGPS_cfg.h` and in `#define LAST_SENTENCE_IN_INTERVAL NMEAGPS::NMEA_GLL`, change `GLL` to whatever your last sentence was in step 3.
 
+## Stability improvements
+
+To increase stability some changes can be made in NeoGPS to decrease dynamic memory. A simple one that instantly decreases dynamic memory is in `GPSfix_cfg.h`, here you can comment all the variables that are not used, i.e. only have `#define GPS_FIX_LOCATION` and `#define GPS_FIX_SATELLITES` uncommented. This will decrease dynamic memory by about 3 to 4%.  
+
 ## Extra information
 
 I recommend testing all the codes one by one in the following order:
