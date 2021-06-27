@@ -17,7 +17,6 @@ Cansat is a competition where you have to design a little satellite that will go
 - A buck-converter set to ±3.3V. 
 - A blue LED.
 - A 330Ω resistor.
-- A bidirectional 2 channel logic converter ~7.6v <-> 3.3v 
 - 2x 3.7V LiPo single cel 650mAh batteries in parallel.
 - A master switch between batteries and all the parts
 - A 3d printed inner and outer case.
