@@ -10,11 +10,11 @@ import os
 import datetime
 import matplotlib.pyplot as plt
 
+# this will plot all the data afterward, the text file is still made
+# however, so replotting is always possible. 
 def make_plot():
-    # this will plot all the data afterward, the text file is still made
-    # however, so replotting is always possible. 
     plt.close('all')
-    fig, ax = plt.subplots(4, figsize=(16,9))
+    fig, ax = plt.subplots(3, figsize=(16,9))
     ax[0].plot(time_list, temperature_list, color = 'red')
     ax[0].set_xlabel('time (s)')
     ax[0].set_ylabel('temperature (℃)')
@@ -23,17 +23,22 @@ def make_plot():
     ax[1].set_xlabel('time (s)')
     ax[1].set_ylabel('pressure (Pa)')
     ax[1].grid()
-    # ax[2].plot(timelist, wind_speed, color = 'purple')
-    # ax[2].set_xlabel('time (s)')
-    # ax[2].set_ylabel('wind / horizontal speed (m/s)')
-    # ax[2].grid()
-    ax[3].plot(time_list, altitude_list, color = 'red')
-    ax[3].set_xlabel('time (s)')
-    ax[3].set_ylabel('altitude (m)')
-    ax[3].grid()
+    ax[2].plot(time_list, altitude_list, color = 'red')
+    ax[2].set_xlabel('time (s)')
+    ax[2].set_ylabel('altitude (m)')
+    ax[2].grid()
     plt.tight_layout()
     fig.savefig(os.path.join(path, plot_1_name + '.png'), dpi = 185, pad_inches = 10)
 
+# this part of the code creates a new text file
+def create_file_name(wanted_folder_name, wanted_text_name):
+    folder_name = wanted_folder_name + " " + str(datetime.datetime.now())[:-7]
+    folder_name = folder_name.replace(":", ".")
+    os.makedirs(folder_name)
+    path = os.path.join(os.getcwd(), folder_name)
+    file = open(os.path.join(path, wanted_text_name + '.txt'), "w+")
+    return file, path
+    
 #change as preferred
 text_file_name = "receiver_data"
 receiver_baudrate = 115200
@@ -51,16 +56,6 @@ for port in ports:
 ser = serial.Serial(serial_port, baudrate = 115200)
 satellite_list,latitude_list,longitude_list = [], [], []
 altitude_list, temperature_list, pressure_list, time_list = [], [], [], []
-
-# this part of the code creates a new text file
-
-def create_file_name(wanted_folder_name, wanted_text_name):
-    folder_name = wanted_folder_name + " " + str(datetime.datetime.now())[:-7]
-    folder_name = folder_name.replace(":", ".")
-    os.makedirs(folder_name)
-    path = os.path.join(os.getcwd(), folder_name)
-    file = open(os.path.join(path, wanted_text_name + '.txt'), "w+")
-    return file, path
 
 file, path = create_file_name("data", "receiver_data")
 print("writing to file: ", file.name)
@@ -88,7 +83,6 @@ while True:
                 else:
                     satellite_list.append(0)
                 
-                
                 latitude = float(data_list[1])
                 longitude = float(data_list[2])
                 altitude = float(data_list[3])
@@ -102,7 +96,7 @@ while True:
                 temperature_list.append(temperature)
                 pressure_list.append(pressure)
                 time_list.append(current_time)                        
-        
+    # when somebody stops the code
     except:
         error = sys.exc_info()[0]
         print(error)
