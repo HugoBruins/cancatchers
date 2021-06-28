@@ -10,6 +10,11 @@ import os
 import datetime
 import matplotlib.pyplot as plt
 
+#change as preferred
+text_file_name = "receiver_data"
+receiver_baudrate = 115200
+plot_1_name = "temperature pressure altitude"
+
 # this will plot all the data afterward, the text file is still made
 # however, so replotting is always possible. 
 def make_plot():
@@ -38,11 +43,6 @@ def create_file_name(wanted_folder_name, wanted_text_name):
     path = os.path.join(os.getcwd(), folder_name)
     file = open(os.path.join(path, wanted_text_name + '.txt'), "w+")
     return file, path
-    
-#change as preferred
-text_file_name = "receiver_data"
-receiver_baudrate = 115200
-plot_1_name = "temperature pressure windspeed altitude"
 
 # this beautiful piece of code gets the active port, i.e. Arduino port
 # if it's connected via usb obviously
