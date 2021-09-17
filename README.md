@@ -1,4 +1,4 @@
-# Project is over, results:
+# Project is over
 
 [Results](https://github.com/HugoBruins/cancatchers/tree/master/results%20launch%20date)
 
